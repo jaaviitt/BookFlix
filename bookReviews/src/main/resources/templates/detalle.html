@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:text="${libro.titulo} + ' - BookFlix'">Detalle Libro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body style="padding-top: 80px;">
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top px-4">
+    <a class="navbar-brand" href="/">BOOKFLIX</a>
+    <div class="ms-auto">
+        <a href="/" class="btn btn-outline-light btn-sm">Volver al Catálogo</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row">
+
+        <div class="col-md-4 text-center">
+            <img th:src="${libro.imagenUrl != null ? libro.imagenUrl : 'https://via.placeholder.com/300x450'}"
+                 class="img-fluid rounded shadow-lg border border-secondary"
+                 style="max-height: 500px;" alt="Portada">
+        </div>
+
+        <div class="col-md-8 text-white">
+            <h1 class="display-4 fw-bold mb-3" th:text="${libro.titulo}">Título del Libro</h1>
+
+            <div class="mb-4">
+                <span class="badge bg-danger fs-6 me-2" th:text="${libro.genero}">Género</span>
+                <span class="text-secondary fs-5" th:text="${libro.anioPublicacion}">2024</span>
+                <span class="mx-2 text-secondary">|</span>
+                <span class="text-secondary" th:text="'Autor: ' + ${libro.autor}">Autor</span>
+            </div>
+
+            <p class="lead text-light opacity-75" th:text="${libro.sinopsis}">
+                Sinopsis del libro...
+            </p>
+
+            <div class="mt-5 d-flex gap-3">
+                <a th:if="${libro.rutaPdf != null}"
+                   th:href="@{${libro.rutaPdf}}"
+                   target="_blank"
+                   class="btn btn-netflix btn-lg px-5 fw-bold">
+                    📖 LEER AHORA
+                </a>
+
+                <button class="btn btn-secondary btn-lg">⭐ Escribir Reseña</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

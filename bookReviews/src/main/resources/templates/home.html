@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>BookFlix - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">BOOKFLIX</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" href="/">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Géneros</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+
+                <a th:href="@{/admin/nuevo-libro}" class="btn btn-danger btn-sm fw-bold"
+                   sec:authorize="hasRole('ADMIN')">
+                    + Subir Libro
+                </a>
+
+                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
+                    <span class="text-white small">Hola, <span sec:authentication="name" class="fw-bold">Usuario</span></span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+                    </form>
+                </div>
+
+                <a sec:authorize="!isAuthenticated()" href="/login" class="btn btn-primary btn-sm">Iniciar Sesión</a>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="margin-top: 80px;">
+
+    <div class="p-5 mb-4 bg-dark rounded-3 border border-secondary">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Bienvenido a BookFlix</h1>
+            <p class="col-md-8 fs-4">Esta aplicación permite consultar, buscar y gestionar reseñas de tus libros favoritos.</p>
+            <button class="btn btn-netflix btn-lg" type="button">Explorar Catálogo</button>
+        </div>
+    </div>
+
+    <h3 class="mb-3">Tendencias de hoy</h3>
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+
+        <div class="col" th:each="libro : ${libros}">
+            <a th:href="@{/libro/{id}(id=${libro.id})}" class="text-decoration-none">
+
+                <div class="card book-card">
+                    <img th:src="${libro.imagenUrl != null ? libro.imagenUrl : 'https://via.placeholder.com/200x300'}"
+                         class="card-img-top book-cover" alt="Portada">
+                    <div class="card-body p-1">
+                        <small class="text-muted" th:text="${libro.genero}">Género</small>
+                        <h6 class="card-title text-white text-truncate" th:text="${libro.titulo}">Título</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

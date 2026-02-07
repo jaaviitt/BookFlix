@@ -1,0 +1,30 @@
+/* auth.css - Solo para Login y Registro */
+
+/* Centrar verticalmente */
+body.d-flex {
+    min-height: 100vh;
+}
+
+/* Tarjetas de autenticación */
+.card {
+    background-color: #1f1f1f; /* Un gris un poco más claro que el fondo */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+/* Inputs oscuros específicos de estos formularios */
+.form-control-dark {
+    background-color: #333;
+    border: 1px solid #444;
+    color: white;
+}
+
+.form-control-dark::placeholder {
+    color: #bbb;
+}
+
+.form-control-dark:focus {
+    background-color: #444;
+    color: white;
+    border-color: #E50914;
+    box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25);
+}

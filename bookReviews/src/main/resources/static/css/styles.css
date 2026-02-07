@@ -1,0 +1,32 @@
+/* styles.css - Estilos Globales (Navbar, Fondo, Tipografía) */
+
+body {
+    background-color: #141414;
+    color: white;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Navbar Global */
+.navbar {
+    background-color: #000000;
+    border-bottom: 1px solid #222;
+}
+
+.navbar-brand {
+    color: #E50914 !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Botón Rojo Global */
+.btn-netflix {
+    background-color: #E50914;
+    color: white;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.btn-netflix:hover {
+    background-color: #b20710;
+    color: white;
+}

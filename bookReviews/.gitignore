@@ -1,0 +1,23 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+.classpath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Ignorar la base de datos local y los archivos subidos (uploads)
+# Queremos que cada uno tenga sus propios libros de prueba
+data/
+src/main/resources/static/uploads/
+src/main/resources/static/img/
+*.log
