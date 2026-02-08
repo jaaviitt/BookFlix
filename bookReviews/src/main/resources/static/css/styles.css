@@ -30,3 +30,59 @@ body {
     background-color: #b20710;
     color: white;
 }
+
+/* --- ESTILOS GENERALES --- */
+body {
+    background-color: #141414; /* Negro Netflix */
+    color: white;
+}
+
+/* --- CARRUSEL HORIZONTAL (Estilo Netflix) --- */
+.scrolling-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch; /* Scroll suave en móviles */
+}
+
+/* Ocultar barra de scroll (Chrome/Safari/Edge) */
+.scrolling-wrapper::-webkit-scrollbar {
+    height: 8px;
+    background: transparent;
+}
+.scrolling-wrapper::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+.scrolling-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* --- TARJETAS DE LIBROS --- */
+.card-block {
+    display: inline-block;
+    width: 200px;  /* Ancho fijo */
+    margin-right: 15px;
+    vertical-align: top;
+    white-space: normal; /* Para que el título baje de línea si es largo */
+}
+
+.book-card {
+    background-color: transparent;
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.book-card:hover {
+    transform: scale(1.05); /* Zoom al pasar el ratón */
+    z-index: 10;
+    cursor: pointer;
+}
+
+.book-cover {
+    height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}

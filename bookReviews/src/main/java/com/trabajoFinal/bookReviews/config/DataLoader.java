@@ -38,6 +38,8 @@ public class DataLoader implements CommandLineRunner {
             for (File archivo : archivos) {
                 if (archivo.isFile() && archivo.getName().toLowerCase().endsWith(".pdf")) {
                     procesarLibro(archivo);
+                    System.out.println("⏳ Esperando 2 segundos...");
+                    Thread.sleep(2000);
                 }
             }
         }
