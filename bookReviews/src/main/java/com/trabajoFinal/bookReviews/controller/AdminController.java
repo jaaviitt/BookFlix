@@ -44,38 +44,50 @@ public class AdminController {
     @PostMapping("/guardar")
     public String guardarLibro(Libro libro, @RequestParam("archivoPdf") MultipartFile archivo) {
 
-        // 1. MAGIA: Llamamos a Google para rellenar los huecos
+        // 1. Intentamos que Google rellene los datos
         googleBooksService.rellenarDatosLibro(libro);
 
-        // 2. Procesamos el Archivo (PDF y Portada)
+        // --- CORRECCIÓN DE SEGURIDAD ---
+        // Si Google ha fallado o no ha encontrado nada, ponemos valores por defecto
+        // para que la base de datos no se queje.
+
+        if (libro.getAutor() == null || libro.getAutor().isEmpty()) {
+            libro.setAutor("Autor Desconocido");
+        }
+
+        if (libro.getGenero() == null || libro.getGenero().isEmpty()) {
+            libro.setGenero("General");
+        }
+
+        if (libro.getAnioPublicacion() == null) {
+            libro.setAnioPublicacion(2024); // Año actual o desconocido
+        }
+
+        if (libro.getSinopsis() == null || libro.getSinopsis().isEmpty()) {
+            libro.setSinopsis("Sin sinopsis disponible.");
+        }
+        // -------------------------------
+
+        // 2. Procesamos el Archivo PDF (Esto déjalo igual que lo tenías)
         if (!archivo.isEmpty()) {
             try {
-                // Crear directorios si no existen
-                new File(UPLOAD_DIR).mkdirs();
-                new File(IMG_DIR).mkdirs();
+                // ... (tu código de subida de archivos) ...
+                // Asegúrate de que las rutas son las correctas:
+                // new File("src/main/resources/static/uploads/").mkdirs();
 
+                // NOTA: Para este ejemplo resumo tu código anterior aquí:
                 String nombreArchivo = archivo.getOriginalFilename();
-                Path rutaArchivo = Paths.get(UPLOAD_DIR + nombreArchivo);
-                Files.write(rutaArchivo, archivo.getBytes());
-
-                // Guardamos la ruta relativa para que la web la encuentre
+                // ... guardar archivo ...
                 libro.setRutaPdf("/uploads/" + nombreArchivo);
+                // ... generar portada ...
+                // libro.setImagenUrl(...)
 
-                // Generar portada del PDF
-                try (PDDocument document = PDDocument.load(new File(UPLOAD_DIR + nombreArchivo))) {
-                    PDFRenderer pdfRenderer = new PDFRenderer(document);
-                    BufferedImage bim = pdfRenderer.renderImageWithDPI(0, 300);
-                    String nombrePortada = nombreArchivo.replace(".pdf", ".jpg");
-                    ImageIO.write(bim, "jpg", new File(IMG_DIR + nombrePortada));
-
-                    libro.setImagenUrl("/img/" + nombrePortada);
-                }
-
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        // 3. Guardamos (Ahora ya no fallará porque no hay nulos)
         libroRepository.save(libro);
         return "redirect:/";
     }

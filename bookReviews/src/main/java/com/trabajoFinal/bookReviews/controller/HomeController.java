@@ -1,38 +1,28 @@
 package com.trabajoFinal.bookReviews.controller;
 
 import com.trabajoFinal.bookReviews.entity.Libro;
+import com.trabajoFinal.bookReviews.repository.LibroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Controller // Usamos @Controller (no @RestController) para devolver HTML
+@Controller
 public class HomeController {
 
+    @Autowired
+    private LibroRepository libroRepository; // Inyectamos el almacén de libros
+
     @GetMapping("/")
-    public String mostrarHome(Model model) {
-        // 1. Creamos una lista falsa de libros para que el diseño no se vea vacío
-        List<Libro> librosFalsos = new ArrayList<>();
+    public String index(Model model) {
+        // ANTES: Tenías aquí una lista falsa creada a mano (new Libro...)
 
-        Libro l1 = new Libro();
-        l1.setTitulo("El Quijote");
-        l1.setGenero("Clásico");
-        l1.setImagenUrl("https://edicionescatedra.com/imagenes/libros/grande/9788437606778-don-quijote-de-la-mancha-i.jpg");
+        // AHORA: Pedimos los libros reales a la base de datos
+        List<Libro> libros = libroRepository.findAll();
 
-        Libro l2 = new Libro();
-        l2.setTitulo("1984");
-        l2.setGenero("Ciencia Ficción");
-        l2.setImagenUrl("https://m.media-amazon.com/images/I/71s1w2i7K+L._AC_UF1000,1000_QL80_.jpg");
-
-        librosFalsos.add(l1);
-        librosFalsos.add(l2);
-
-        // 2. Pasamos la lista a la vista (HTML)
-        model.addAttribute("libros", librosFalsos);
-
-        // 3. Decimos qué archivo HTML mostrar (debe llamarse 'home.html' o 'index.html')
-        return "home";
+        model.addAttribute("libros", libros);
+        return "home"; // Tu archivo home.html
     }
 }

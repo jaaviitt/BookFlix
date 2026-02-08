@@ -63,8 +63,10 @@
                     <img th:src="${libro.imagenUrl != null ? libro.imagenUrl : 'https://via.placeholder.com/200x300'}"
                          class="card-img-top book-cover" alt="Portada">
                     <div class="card-body p-1">
+                        <small style="color: red; font-weight: bold;" th:text="'ID: ' + ${libro.id}">ID: ???</small>
+
                         <small class="text-muted" th:text="${libro.genero}">Género</small>
-                        <h6 class="card-title text-white text-truncate" th:text="${libro.titulo}">Título</h6>
+                        <h6 class="card-title text-muted text-truncate" th:text="${libro.titulo}">Título</h6>
                     </div>
                 </div>
             </a>
