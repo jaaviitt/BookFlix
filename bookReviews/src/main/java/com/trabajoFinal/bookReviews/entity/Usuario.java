@@ -22,7 +22,7 @@ public class Usuario implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // --- TUS VALIDACIONES ORIGINALES (MANTENIDAS) ---
+    // --- VALIDACIONES ---
     @NotBlank(message = "El nombre de usuario es obligatorio")
     @Size(min = 3, max = 50, message = "El usuario debe tener entre 3 y 50 caracteres")
     @Column(unique = true)
@@ -36,12 +36,10 @@ public class Usuario implements UserDetails {
     @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
-    // --- CAMBIO CLAVE: DE "String rol" A "List<String> roles" ---
-    // Esto arregla el error "cannot find symbol getRoles()"
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-    // --- TU RELACIÓN CON RESEÑAS (MANTENIDA) ---
+    // --- RELACIÓN CON RESEÑAS ---
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Resena> resenas = new ArrayList<>();

@@ -19,7 +19,7 @@ public class GoogleBooksService {
             return;
         }
 
-        System.out.println("🌍 Consultando OpenLibrary para: " + libro.getTitulo());
+        System.out.println("Consultando OpenLibrary para: " + libro.getTitulo());
         consultarOpenLibrary(libro);
     }
 
@@ -57,7 +57,7 @@ public class GoogleBooksService {
                         }
                     }
 
-                    // 2. GÉNEROS (Adaptado a tu nueva Lista)
+                    // 2. GÉNEROS
                     // Si el género actual es "General" o está vacío, intentamos coger el de internet
                     if (libro.getGeneros() == null || libro.getGeneros().isEmpty() ||
                             (libro.getGeneros().size() == 1 && libro.getGeneros().get(0).equals("General"))) {
@@ -86,7 +86,6 @@ public class GoogleBooksService {
                         if (doc.path("first_sentence").isArray()) {
                             libro.setSinopsis("Primera frase: " + doc.path("first_sentence").get(0).asText());
                         } else {
-                            // OpenLibrary a veces no tiene sinopsis completa, así que dejamos el aviso
                             libro.setSinopsis("Sinopsis no disponible en OpenLibrary.");
                         }
                     }

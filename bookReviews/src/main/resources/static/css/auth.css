@@ -20,7 +20,7 @@
     border-radius: 4px;
     width: 100%;
     max-width: 450px;
-    min-height: 500px; /* Altura mínima para que no quede aplastado */
+    min-height: 500px;
     color: white;
 }
 
@@ -54,7 +54,7 @@
     border-radius: 4px;
     font-size: 1rem;
     margin-top: 20px;
-    width: 100%; /* Para que ocupe todo el ancho */
+    width: 100%;
 }
 
 .btn-red-primary:hover {

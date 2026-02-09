@@ -30,21 +30,21 @@ public class Resena {
     private LocalDateTime fecha = LocalDateTime.now();
 
     // --- RELACIÓN CON LIBRO ---
-    @ManyToOne // Quitamos LAZY para evitar errores en la vista
+    @ManyToOne
     @JoinColumn(name = "libro_id", nullable = false)
     private Libro libro;
 
     // --- RELACIÓN CON USUARIO ---
-    @ManyToOne // Quitamos LAZY para evitar errores en la vista
+    @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    // --- CONSTRUCTORES (NECESARIOS PARA EL CONTROLADOR) ---
+    // --- CONSTRUCTORES ---
 
-    // 1. Constructor vacío (Obligatorio para JPA)
+    // 1. Constructor vacío
     public Resena() {}
 
-    // 2. Constructor lleno (El que usa el Controlador)
+    // 2. Constructor lleno
     public Resena(Integer puntuacion, String comentario, Usuario usuario, Libro libro) {
         this.puntuacion = puntuacion;
         this.comentario = comentario;

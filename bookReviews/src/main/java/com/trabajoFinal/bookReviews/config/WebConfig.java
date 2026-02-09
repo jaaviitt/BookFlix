@@ -10,7 +10,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Mapeamos la URL "/uploads/**" a la carpeta física "uploads/"
-        // "file:uploads/" le dice a Spring que busque en el sistema de archivos, no en el classpath
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
     }

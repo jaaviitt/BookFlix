@@ -54,7 +54,7 @@ public class AdminController {
         return "admin/formulario-libro";
     }
 
-    // --- 3. GUARDAR LIBRO (CON NUEVA LÓGICA DE GÉNEROS) ---
+    // --- 3. GUARDAR LIBRO ---
     @PostMapping("/guardar")
     public String guardarLibro(Libro libro,
                                @RequestParam("archivoPdf") MultipartFile archivo,
@@ -69,7 +69,7 @@ public class AdminController {
             libro.setGeneros(lista);
         }
 
-        // B. LLAMAR AL SERVICIO (OpenLibrary)
+        // B. LLAMAR AL SERVICIO
         googleBooksService.rellenarDatosLibro(libro);
 
         // C. PARACAÍDAS DE SEGURIDAD (Valores por defecto)
@@ -87,7 +87,7 @@ public class AdminController {
             libro.setSinopsis("Sin sinopsis disponible.");
         }
 
-        // D. PROCESAR PDF (TU CÓDIGO ORIGINAL)
+        // D. PROCESAR PDF
         if (!archivo.isEmpty()) {
             try {
                 Path directorioImagenes = Paths.get(UPLOAD_DIR);
@@ -152,29 +152,23 @@ public class AdminController {
         return "redirect:/admin/dashboard";
     }
 
-    // --- 5. GESTIÓN DE USUARIOS (CON PROTECCIÓN SUPREMA) ---
+    // --- 5. GESTIÓN DE USUARIOS ---
 
     @PostMapping("/usuario/{id}/cambiar-rol")
     public String cambiarRolUsuario(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
         if (usuario != null) {
-            // 🛡️ PROTECCIÓN SUPREMA: Si es el admin principal, NO SE TOCA.
             if ("admin".equalsIgnoreCase(usuario.getUsername())) {
-                System.out.println("⛔ INTENTO DE MODIFICAR AL SUPER ADMIN BLOQUEADO.");
+                System.out.println("INTENTO DE MODIFICAR AL SUPER ADMIN BLOQUEADO.");
                 return "redirect:/admin/dashboard?error=superadmin";
             }
 
-            // Lógica de cambio de rol
             List<String> rolesActuales = usuario.getRoles();
 
             if (rolesActuales.contains("ROLE_ADMIN")) {
-                // ANTES (Fallaba): usuario.setRoles(List.of("ROLE_USER"));
-                // AHORA (Correcto): Usamos ArrayList mutable
                 usuario.setRoles(new ArrayList<>(List.of("ROLE_USER")));
             } else {
-                // ANTES (Fallaba): usuario.setRoles(List.of("ROLE_ADMIN", "ROLE_USER"));
-                // AHORA (Correcto): Usamos ArrayList mutable
                 usuario.setRoles(new ArrayList<>(List.of("ROLE_ADMIN", "ROLE_USER")));
             }
 
@@ -187,10 +181,9 @@ public class AdminController {
     public String eliminarUsuario(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
-        // 🛡️ PROTECCIÓN SUPREMA
         if (usuario != null) {
             if ("admin".equalsIgnoreCase(usuario.getUsername())) {
-                System.out.println("⛔ INTENTO DE ELIMINAR AL SUPER ADMIN BLOQUEADO.");
+                System.out.println("INTENTO DE ELIMINAR AL SUPER ADMIN BLOQUEADO.");
                 return "redirect:/admin/dashboard?error=superadmin";
             }
             usuarioRepository.deleteById(id);

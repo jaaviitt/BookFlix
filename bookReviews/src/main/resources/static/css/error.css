@@ -12,7 +12,7 @@ body {
     background: radial-gradient(circle at center, #1f1f1f 0%, #000000 100%);
     color: white;
     margin: 0;
-    padding: 0 !important; /* Importante para anular el padding del navbar si se colara */
+    padding: 0 !important;
 }
 
 /* El número gigante */

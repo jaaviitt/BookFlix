@@ -77,12 +77,12 @@ public class DataLoader implements CommandLineRunner {
             return;
         }
 
-        System.out.println("🔍 Nuevo libro detectado: " + nombreArchivo);
+        System.out.println("Nuevo libro detectado: " + nombreArchivo);
 
         Libro nuevoLibro = new Libro();
         nuevoLibro.setRutaPdf(rutaRelativa);
 
-        // Intentar sacar título y autor del nombre del archivo (Ej: "Titulo - Autor.pdf")
+        // Intentar sacar título y autor del nombre del archivo
         String nombreSinExt = nombreArchivo.replace(".pdf", "");
         if (nombreSinExt.contains(" - ")) {
             String[] partes = nombreSinExt.split(" - ");
@@ -93,7 +93,7 @@ public class DataLoader implements CommandLineRunner {
             nuevoLibro.setAutor("Autor Desconocido");
         }
 
-        // Valores por defecto (usando la nueva Lista de géneros)
+        // Valores por defecto
         nuevoLibro.setGeneros(List.of("General"));
         nuevoLibro.setAnioPublicacion(2024);
         nuevoLibro.setSinopsis("Sinopsis pendiente...");

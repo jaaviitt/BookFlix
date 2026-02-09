@@ -2,20 +2,20 @@
 
 /* --- CONTENEDOR PRINCIPAL DEL FORMULARIO --- */
 .admin-container {
-    background-color: #141414; /* Negro fondo */
+    background-color: #141414;
     min-height: 100vh;
     padding-bottom: 50px;
     color: white;
 }
 
 .admin-card {
-    background-color: rgba(0, 0, 0, 0.75); /* Negro semitransparente */
+    background-color: rgba(0, 0, 0, 0.75);
     border: 1px solid #333;
     border-radius: 8px;
     padding: 40px;
     margin-top: 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    max-width: 800px; /* Que no sea excesivamente ancho */
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -26,13 +26,13 @@
     font-weight: bold;
     font-size: 2rem;
     margin-bottom: 30px;
-    border-bottom: 2px solid #E50914; /* Línea roja Netflix */
+    border-bottom: 2px solid #E50914;
     padding-bottom: 10px;
 }
 
 /* --- LABELS (ETIQUETAS) --- */
 .form-label {
-    color: #b3b3b3; /* Gris claro */
+    color: #b3b3b3;
     font-weight: 500;
     margin-bottom: 8px;
     font-size: 0.9rem;
@@ -43,7 +43,7 @@
     background-color: #333 !important;
     border: 1px solid #333 !important;
     color: white !important;
-    height: 50px; /* Más altos, más modernos */
+    height: 50px;
     border-radius: 4px;
 }
 
@@ -59,9 +59,9 @@
     color: #777;
 }
 
-/* --- INPUT DE ARCHIVO (EL MÁS FEO DE ARREGLAR) --- */
+/* --- INPUT DE ARCHIVO --- */
 input[type="file"].form-control {
-    padding-top: 10px; /* Centrar texto verticalmente */
+    padding-top: 10px;
     height: auto;
 }
 

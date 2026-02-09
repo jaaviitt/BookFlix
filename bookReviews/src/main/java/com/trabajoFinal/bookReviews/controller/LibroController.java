@@ -39,8 +39,6 @@ public class LibroController {
             return "redirect:/";
         }
 
-        // Cargar las reseñas ordenadas por fecha (si añadiste el método OrderByFechaDesc en el repo, úsalo aquí)
-        // Si no, usa findByLibroId normal
         List<Resena> resenas = resenaRepository.findByLibroId(id);
 
         model.addAttribute("libro", libro);
@@ -56,7 +54,7 @@ public class LibroController {
                                 @RequestParam int puntuacion,
                                 @AuthenticationPrincipal UserDetails userDetails) {
 
-        System.out.println("📢 INTENTO DE RESEÑA RECIBIDO PARA LIBRO ID: " + id);
+        System.out.println("INTENTO DE RESEÑA RECIBIDO PARA LIBRO ID: " + id);
 
         // 1. Si no está logueado, fuera
         if (userDetails == null) {
@@ -74,19 +72,18 @@ public class LibroController {
 
         // 4. Guardar
         if (libro != null && usuario != null) {
-            // Usamos el constructor que tienes en Resena.java (asegúrate que existe)
             // Si no tienes constructor, usamos los setters:
             Resena resena = new Resena();
             resena.setLibro(libro);
             resena.setUsuario(usuario);
             resena.setComentario(comentario);
             resena.setPuntuacion(puntuacion);
-            // resena.setFecha(LocalDateTime.now()); // Se pone sola si lo configuraste en la entidad
+            // resena.setFecha(LocalDateTime.now());
 
             resenaRepository.save(resena);
-            System.out.println("✅ ÉXITO: Reseña guardada.");
+            System.out.println("ÉXITO: Reseña guardada.");
         } else {
-            System.out.println("❌ ERROR: Usuario o Libro no encontrados.");
+            System.out.println("ERROR: Usuario o Libro no encontrados.");
         }
 
         return "redirect:/libro/" + id;

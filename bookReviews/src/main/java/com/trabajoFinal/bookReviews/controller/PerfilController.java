@@ -48,7 +48,7 @@ public class PerfilController {
             model.addAttribute("totalResenas", misResenas.size());
         }
 
-        return "perfil"; // Carga perfil.html
+        return "perfil";
     }
 
     // --- 2. GUARDAR CAMBIOS (POST) ---
