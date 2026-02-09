@@ -30,45 +30,63 @@ public class LibroController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // ESTE ES EL MÉTODO QUE TE FALTA O FALLA
+    // --- VER DETALLE DEL LIBRO ---
     @GetMapping("/libro/{id}")
     public String verDetalle(@PathVariable Long id, Model model) {
-        // 1. Buscamos el libro por ID
         Libro libro = libroRepository.findById(id).orElse(null);
 
-        // 2. Si no existe (o el ID es null), volvemos a la home para evitar errores
         if (libro == null) {
             return "redirect:/";
         }
 
-        // 3. Cargamos las reseñas
+        // Cargar las reseñas ordenadas por fecha (si añadiste el método OrderByFechaDesc en el repo, úsalo aquí)
+        // Si no, usa findByLibroId normal
         List<Resena> resenas = resenaRepository.findByLibroId(id);
 
-        // 4. Pasamos los datos a la vista
         model.addAttribute("libro", libro);
         model.addAttribute("resenas", resenas);
 
-        return "detalle"; // Esto carga el archivo detalle.html
+        return "detalle";
     }
 
-    // GUARDAR RESEÑA
+    // --- GUARDAR RESEÑA (VERSIÓN ROBUSTA) ---
     @PostMapping("/libro/{id}/resena")
     public String guardarResena(@PathVariable Long id,
                                 @RequestParam String comentario,
                                 @RequestParam int puntuacion,
                                 @AuthenticationPrincipal UserDetails userDetails) {
 
-        Libro libro = libroRepository.findById(id).orElse(null);
-        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        System.out.println("📢 INTENTO DE RESEÑA RECIBIDO PARA LIBRO ID: " + id);
 
+        // 1. Si no está logueado, fuera
+        if (userDetails == null) {
+            System.out.println("❌ Usuario no identificado.");
+            return "redirect:/login";
+        }
+
+        // 2. Buscar Usuario (Por username O por email)
+        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+                .or(() -> usuarioRepository.findByEmail(userDetails.getUsername()))
+                .orElse(null);
+
+        // 3. Buscar Libro
+        Libro libro = libroRepository.findById(id).orElse(null);
+
+        // 4. Guardar
         if (libro != null && usuario != null) {
+            // Usamos el constructor que tienes en Resena.java (asegúrate que existe)
+            // Si no tienes constructor, usamos los setters:
             Resena resena = new Resena();
             resena.setLibro(libro);
             resena.setUsuario(usuario);
             resena.setComentario(comentario);
             resena.setPuntuacion(puntuacion);
+            // resena.setFecha(LocalDateTime.now()); // Se pone sola si lo configuraste en la entidad
 
             resenaRepository.save(resena);
+            System.out.println("✅ ÉXITO: Reseña guardada.");
+        } else {
+            System.out.println("❌ ERROR: Usuario o Libro no encontrados.");
         }
 
         return "redirect:/libro/" + id;

@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
-    // Buscar todas las reseñas de un libro (ya lo tenías)
+    // Buscar todas las reseñas de un libro
     List<Resena> findByLibroId(Long libroId);
+
+    // Filtrar ordenando por fecha)
+    List<Resena> findByLibroIdOrderByFechaDesc(Long libroId);
 
     // Buscar todas las reseñas hechas por un usuario específico
     List<Resena> findByUsuario_Id(Long usuarioId);

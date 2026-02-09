@@ -21,10 +21,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         // 1. Buscamos el usuario en la base de datos
-        Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+        Usuario usuario = usuarioRepository.findByUsername(usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + usernameOrEmail));
 
         // 2. Convertimos la LISTA de roles (Strings) a Permisos de Seguridad (GrantedAuthority)
         List<GrantedAuthority> autoridades = usuario.getRoles().stream()

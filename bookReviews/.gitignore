@@ -21,3 +21,4 @@ data/
 src/main/resources/static/uploads/
 src/main/resources/static/img/
 *.log
+data/bookdb.mv.db

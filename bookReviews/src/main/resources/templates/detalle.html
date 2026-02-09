@@ -6,10 +6,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
-<body style="padding-top: 80px;">
+<body style="padding-top: 80px;" class="bg-black text-white">
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top px-4">
-    <a class="navbar-brand" href="/">BOOKFLIX</a>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top px-4 bg-black bg-opacity-75">
+    <a class="navbar-brand text-danger fw-bold fs-3" href="/">BOOKFLIX</a>
     <div class="ms-auto">
         <a href="/" class="btn btn-outline-light btn-sm">Volver al Catálogo</a>
     </div>
@@ -18,13 +18,14 @@
 <div class="container mt-5">
     <div class="row">
 
-        <div class="col-md-4 text-center">
+        <div class="col-md-4 text-center mb-4">
             <img th:src="${libro.imagenUrl != null ? libro.imagenUrl : 'https://via.placeholder.com/300x450'}"
                  class="img-fluid rounded shadow-lg border border-secondary"
-                 style="max-height: 500px;" alt="Portada">
+                 style="max-height: 500px; object-fit: cover;" alt="Portada">
         </div>
 
-        <div class="col-md-8 text-white">
+        <div class="col-md-8">
+
             <h1 class="display-4 fw-bold mb-3" th:text="${libro.titulo}">Título del Libro</h1>
 
             <div class="mb-4">
@@ -38,19 +39,75 @@
                 Sinopsis del libro...
             </p>
 
-            <div class="mt-5 d-flex gap-3">
+            <div class="mt-4 mb-5">
                 <a th:if="${libro.rutaPdf != null}"
                    th:href="@{${libro.rutaPdf}}"
                    target="_blank"
-                   class="btn btn-netflix btn-lg px-5 fw-bold">
+                   class="btn btn-light text-danger fw-bold btn-lg px-5">
                     📖 LEER AHORA
                 </a>
-
-                <button class="btn btn-secondary btn-lg">⭐ Escribir Reseña</button>
+                <span th:unless="${libro.rutaPdf != null}" class="text-muted fst-italic">
+                    PDF no disponible temporalmente.
+                </span>
             </div>
-        </div>
-    </div>
+
+            <hr class="border-secondary my-5">
+
+            <div class="mt-4">
+                <h3 class="mb-4">Opiniones de la Comunidad</h3>
+
+                <div sec:authorize="isAuthenticated()" class="card bg-dark text-white border-secondary mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">Deja tu reseña</h5>
+                        <form th:action="@{/libro/{id}/resena(id=${libro.id})}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small">Puntuación</label>
+                                <select name="puntuacion" class="form-select bg-black text-white border-secondary" style="max-width: 200px;">
+                                    <option value="5">★★★★★ (Excelente)</option>
+                                    <option value="4">★★★★☆ (Muy bueno)</option>
+                                    <option value="3">★★★☆☆ (Bueno)</option>
+                                    <option value="2">★★☆☆☆ (Regular)</option>
+                                    <option value="1">★☆☆☆☆ (Malo)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small">Comentario</label>
+                                <textarea name="comentario" class="form-control bg-black text-white border-secondary" rows="3" placeholder="¿Qué te ha parecido este libro?" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-sm">Publicar Opinión</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div sec:authorize="!isAuthenticated()" class="alert alert-dark border-secondary text-white mb-4">
+                    <a href="/login" class="text-danger fw-bold text-decoration-none">Inicia sesión</a> para escribir una reseña.
+                </div>
+
+                <div th:if="${resenas.empty}" class="text-secondary fst-italic mb-5">
+                    Nadie ha opinado sobre este libro todavía. ¡Sé el primero!
+                </div>
+
+                <div th:each="resena : ${resenas}" class="card bg-transparent border-bottom border-secondary mb-3 rounded-0">
+                    <div class="card-body ps-0">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <img th:src="'https://ui-avatars.com/api/?name=' + ${resena.usuario.username} + '&background=random&size=32'" class="rounded-circle me-3" width="40">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-white" th:text="${resena.usuario.username}">Usuario</h6>
+                                    <small class="text-muted" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
+                                </div>
+                            </div>
+                            <div class="text-danger">
+                                <span th:each="i : ${#numbers.sequence(1, resena.puntuacion)}">★</span><span th:if="${resena.puntuacion < 5}" th:each="i : ${#numbers.sequence(resena.puntuacion + 1, 5)}" class="text-secondary opacity-25">★</span>
+                            </div>
+                        </div>
+                        <p class="card-text text-light opacity-75 mt-2" th:text="${resena.comentario}">Comentario...</p>
+                    </div>
+                </div>
+
+            </div> </div> </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
