@@ -172,8 +172,18 @@ Se utilizan anotaciones como `@NotNull`, `@NotBlank`, `@Size` y `@Email` para as
 
 ## 7. Capturas de Pantalla
 
-![1770662268872](image/README/1770662268872.png)![1770662352128](image/README/1770662352128.png)![1770662378158](image/README/1770662378158.png)![1770662395978](image/README/1770662395978.png)![1770662414062](image/README/1770662414062.png)![1770662427850](image/README/1770662427850.png)![1770662445715](image/README/1770662445715.png)
+### Página de Inicio y Catálogo
+![Home](screenshots/home.jpeg)
+![Catálogo Completo](screenshots/catalogo.jpeg)
 
+### Experiencia de Usuario
+![Login](screenshots/login.jpeg)
+![Perfil de Usuario](screenshots/perfil.jpeg)
+![Detalle del Libro](screenshots/detalle.jpeg)
+
+### Área de Administración
+![Centro de Comandos](screenshots/centrocomandos.jpeg)
+![Añadir Nuevo Libro](screenshots/nuevobook.jpeg)
 ---
 
 **© 2026 BookFlix Project.** Desarrollado como práctica académica.
