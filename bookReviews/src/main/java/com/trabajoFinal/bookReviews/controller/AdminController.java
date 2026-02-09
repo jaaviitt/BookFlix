@@ -14,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -25,16 +27,15 @@ public class AdminController {
     private LibroRepository libroRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository; // RECUPERADO
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private GoogleBooksService googleBooksService;
 
-    // RECUPERADO: Ruta a la raíz del proyecto para ver los archivos al instante
+    // Ruta a la raíz del proyecto
     private static final String UPLOAD_DIR = "uploads/";
 
-    // --- 1. EL CENTRO DE COMANDOS (DASHBOARD) ---
-    // ESTE MÉTODO FALTABA Y ES EL MÁS IMPORTANTE
+    // --- 1. DASHBOARD ---
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
         List<Libro> libros = libroRepository.findAll();
@@ -46,24 +47,38 @@ public class AdminController {
         return "admin/dashboard";
     }
 
+    // --- 2. FORMULARIO NUEVO LIBRO ---
     @GetMapping("/nuevo-libro")
     public String mostrarFormulario(Model model) {
         model.addAttribute("libro", new Libro());
         return "admin/formulario-libro";
     }
 
+    // --- 3. GUARDAR LIBRO (CON NUEVA LÓGICA DE GÉNEROS) ---
     @PostMapping("/guardar")
-    public String guardarLibro(Libro libro, @RequestParam("archivoPdf") MultipartFile archivo) {
+    public String guardarLibro(Libro libro,
+                               @RequestParam("archivoPdf") MultipartFile archivo,
+                               @RequestParam(value = "generoTexto", required = false) String generoTexto) {
 
-        // 1. Intentamos rellenar con Google/OpenLibrary
+        // A. PROCESAR GÉNEROS (Texto -> Lista)
+        // Recibimos "Terror, Suspense" y lo convertimos a lista
+        if (generoTexto != null && !generoTexto.trim().isEmpty()) {
+            List<String> lista = Arrays.stream(generoTexto.split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+            libro.setGeneros(lista);
+        }
+
+        // B. LLAMAR AL SERVICIO (OpenLibrary)
         googleBooksService.rellenarDatosLibro(libro);
 
-        // --- PARACAÍDAS DE SEGURIDAD ---
+        // C. PARACAÍDAS DE SEGURIDAD (Valores por defecto)
         if (libro.getAutor() == null || libro.getAutor().trim().isEmpty()) {
             libro.setAutor("Autor Desconocido");
         }
-        if (libro.getGenero() == null || libro.getGenero().trim().isEmpty()) {
-            libro.setGenero("General");
+        // Corrección para la lista de géneros
+        if (libro.getGeneros() == null || libro.getGeneros().isEmpty()) {
+            libro.setGeneros(List.of("General"));
         }
         if (libro.getAnioPublicacion() == null || libro.getAnioPublicacion() < 1000) {
             libro.setAnioPublicacion(2024);
@@ -72,60 +87,30 @@ public class AdminController {
             libro.setSinopsis("Sin sinopsis disponible.");
         }
 
-        // 2. Procesar PDF (CÓDIGO RECUPERADO)
+        // D. PROCESAR PDF (TU CÓDIGO ORIGINAL)
         if (!archivo.isEmpty()) {
             try {
-                // Crear directorio si no existe
                 Path directorioImagenes = Paths.get(UPLOAD_DIR);
                 if (!Files.exists(directorioImagenes)) {
                     Files.createDirectories(directorioImagenes);
                 }
 
-                // Guardar archivo
                 byte[] bytes = archivo.getBytes();
                 Path rutaCompleta = Paths.get(UPLOAD_DIR + archivo.getOriginalFilename());
                 Files.write(rutaCompleta, bytes);
 
-                // Asignar ruta al libro
                 libro.setRutaPdf("/uploads/" + archivo.getOriginalFilename());
-
-                // NOTA: Si tenías código para generar portada con PDFBox aquí,
-                // el servicio de GoogleBooksService ya intenta buscar una portada online primero.
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        // 3. Guardar
         libroRepository.save(libro);
-        return "redirect:/admin/dashboard"; // Volvemos al dashboard en vez de al home
-    }
-
-    // --- 2. GESTIÓN DE USUARIOS (RECUPERADO) ---
-
-    @PostMapping("/usuario/{id}/cambiar-rol")
-    public String cambiarRolUsuario(@PathVariable Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        if (usuario != null) {
-            if (usuario.getRoles().contains("ROLE_ADMIN")) {
-                usuario.setRoles(Collections.singletonList("ROLE_USER"));
-            } else {
-                usuario.setRoles(Collections.singletonList("ROLE_ADMIN"));
-            }
-            usuarioRepository.save(usuario);
-        }
         return "redirect:/admin/dashboard";
     }
 
-    @PostMapping("/usuario/{id}/eliminar")
-    public String eliminarUsuario(@PathVariable Long id) {
-        usuarioRepository.deleteById(id);
-        return "redirect:/admin/dashboard";
-    }
-
-    // --- 3. GESTIÓN DE LIBROS ---
-
+    // --- 4. EDITAR LIBRO ---
     @GetMapping("/libro/{id}/editar")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
         Libro libro = libroRepository.findById(id).orElse(null);
@@ -136,14 +121,25 @@ public class AdminController {
     }
 
     @PostMapping("/libro/{id}/actualizar")
-    public String actualizarLibro(@PathVariable Long id, @ModelAttribute Libro libro) {
+    public String actualizarLibro(@PathVariable Long id,
+                                  @ModelAttribute Libro libro,
+                                  @RequestParam(value = "generoTexto", required = false) String generoTexto) {
+
         Libro original = libroRepository.findById(id).orElse(null);
         if (original != null) {
             original.setTitulo(libro.getTitulo());
             original.setAutor(libro.getAutor());
-            original.setGenero(libro.getGenero());
             original.setSinopsis(libro.getSinopsis());
             original.setImagenUrl(libro.getImagenUrl());
+            // No actualizamos el PDF aquí para no borrarlo si no suben uno nuevo
+
+            // Actualizar Géneros (Texto -> Lista)
+            if (generoTexto != null && !generoTexto.trim().isEmpty()) {
+                List<String> lista = Arrays.stream(generoTexto.split(","))
+                        .map(String::trim)
+                        .collect(Collectors.toList());
+                original.setGeneros(lista);
+            }
 
             libroRepository.save(original);
         }
@@ -153,6 +149,30 @@ public class AdminController {
     @PostMapping("/libro/{id}/eliminar")
     public String eliminarLibro(@PathVariable Long id) {
         libroRepository.deleteById(id);
+        return "redirect:/admin/dashboard";
+    }
+
+    // --- 5. GESTIÓN DE USUARIOS ---
+    @PostMapping("/usuario/{id}/cambiar-rol")
+    public String cambiarRolUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario != null) {
+            List<String> rolesActuales = usuario.getRoles();
+            if (rolesActuales.contains("ROLE_ADMIN")) {
+                // Si es admin, lo bajamos a user (usamos ArrayList mutable por si acaso)
+                usuario.setRoles(List.of("ROLE_USER"));
+            } else {
+                // Si es user, lo subimos a admin
+                usuario.setRoles(List.of("ROLE_ADMIN", "ROLE_USER"));
+            }
+            usuarioRepository.save(usuario);
+        }
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/usuario/{id}/eliminar")
+    public String eliminarUsuario(@PathVariable Long id) {
+        usuarioRepository.deleteById(id);
         return "redirect:/admin/dashboard";
     }
 }

@@ -25,7 +25,7 @@ public class HomeController {
 
         // CASO 1: BÚSQUEDA
         if (query != null && !query.isEmpty()) {
-            List<Libro> resultados = libroRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCaseOrGeneroContainingIgnoreCase(query, query, query);
+            List<Libro> resultados = libroRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCaseOrGenerosContainingIgnoreCase(query, query, query);
 
             if (!resultados.isEmpty()) {
                 librosPorGenero.put("Resultados para: " + query, resultados);
@@ -35,9 +35,9 @@ public class HomeController {
 
             // CASO 2: HOME NORMAL
         } else {
-            List<String> generos = libroRepository.findDistinctGeneros();
-            for (String genero : generos) {
-                List<Libro> libros = libroRepository.findByGenero(genero);
+            List<String> generosDb = libroRepository.findDistinctGeneros();
+            for (String genero : generosDb) {
+                List<Libro> libros = libroRepository.findByGenerosContaining(genero);
                 if (!libros.isEmpty()) {
                     librosPorGenero.put(genero, libros);
                 }

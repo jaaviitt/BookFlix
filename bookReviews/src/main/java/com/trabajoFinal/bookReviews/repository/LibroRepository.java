@@ -6,15 +6,17 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface LibroRepository extends JpaRepository<Libro, Long> {
-    // Método para detectar duplicados
-    boolean existsByRutaPdf(String rutaPdf);
 
-    // Obtener una lista de todos los géneros únicos que existen (sin repetir)
-    @Query("SELECT DISTINCT l.genero FROM Libro l")
+    // 1. Buscar libros que contengan ese género en su lista
+    List<Libro> findByGenerosContaining(String genero);
+
+    // 2. Buscar libros por generos distintos
+    @Query("SELECT DISTINCT g FROM Libro l JOIN l.generos g")
     List<String> findDistinctGeneros();
 
-    // Buscar libros por un género concreto
-    List<Libro> findByGenero(String genero);
+    // 3. Buscador Global
+    List<Libro> findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCaseOrGenerosContainingIgnoreCase(String titulo, String autor, String genero);
 
-    List<Libro> findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCaseOrGeneroContainingIgnoreCase(String titulo, String autor, String genero);
+    // 4. Para el escáner (evitar duplicados)
+    boolean existsByRutaPdf(String rutaPdf);
 }

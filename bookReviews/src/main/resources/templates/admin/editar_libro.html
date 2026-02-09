@@ -20,8 +20,13 @@
                     <input type="text" th:field="*{autor}" class="form-control form-control-dark">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label>Género</label>
-                    <input type="text" th:field="*{genero}" class="form-control form-control-dark">
+                    <label class="form-label">Géneros (separados por coma)</label>
+
+                    <input type="text"
+                           name="generoTexto"
+                           class="form-control"
+                           th:value="${libro != null && libro.generos != null} ? ${#strings.listJoin(libro.generos, ', ')} : ''"
+                           placeholder="Ej: Fantasía, Aventura">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label>URL Portada</label>

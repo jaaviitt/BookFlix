@@ -1,10 +1,7 @@
 package com.trabajoFinal.bookReviews.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.ToString; // Importante para evitar bucles infinitos con las relaciones
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,42 +14,36 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El título es obligatorio")
-    @Size(min = 2, max = 100, message = "El título debe tener entre 2 y 100 caracteres")
     private String titulo;
-
-    @NotBlank(message = "El autor es obligatorio")
     private String autor;
-
-    @NotBlank(message = "El género es obligatorio")
-    private String genero;
-
-    // --- LO QUE FALTABA (Datos extra) ---
-
-    @NotNull(message = "El año es obligatorio")
-    @Min(value = 1000, message = "Año no válido")
     private Integer anioPublicacion;
 
-    @Size(max = 2000, message = "La sinopsis es demasiado larga") // Ampliamos a 2000 car.
-    @Column(columnDefinition = "TEXT") // TEXT permite guardar textos muy largos en BBDD
+    @Column(columnDefinition = "TEXT")
     private String sinopsis;
 
-    private String imagenUrl; // Portada (jpg)
-    private String rutaPdf;   // Archivo del libro (pdf)
+    private String imagenUrl;
+    private String rutaPdf;
 
-    // Fecha en la que subimos el libro a la web (útil para ordenar por "Novedades")
-    private LocalDate fechaAlta = LocalDate.now();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "libro_generos", joinColumns = @JoinColumn(name = "libro_id"))
+    @Column(name = "genero")
+    private List<String> generos = new ArrayList<>();
 
-    // --- LA RELACIÓN CRÍTICA (Libro -> Reseñas) ---
-    // Un libro tiene MUCHAS reseñas.
-    // "mappedBy = 'libro'" significa que en la clase Resena habrá un campo llamado 'libro'
-    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude // Evita errores de recursividad al imprimir
-    private List<Resena> resenas = new ArrayList<>();
+    // --- GETTERS Y SETTERS MANUALES ---
 
-    // Método de ayuda para añadir reseñas fácilmente
-    public void agregarResena(Resena resena) {
-        resenas.add(resena);
-        resena.setLibro(this);
+    public List<String> getGeneros() {
+        return generos;
+    }
+
+    public void setGeneros(List<String> generos) {
+        this.generos = generos;
+    }
+
+    // Método extra para añadir un solo género fácilmente
+    public void addGenero(String genero) {
+        if (this.generos == null) {
+            this.generos = new ArrayList<>();
+        }
+        this.generos.add(genero);
     }
 }
