@@ -16,45 +16,48 @@
 
         <div class="collapse navbar-collapse" id="navbarContent">
 
-            <form class="d-flex ms-auto me-3" action="/" method="get">
-                <div class="input-group">
-                    <input class="form-control form-control-sm bg-dark text-white border-secondary"
-                           type="search"
-                           name="q"
-                           placeholder="Títulos, autores, géneros..."
-                           aria-label="Search">
-                    <button class="btn btn-outline-secondary btn-sm" type="submit">🔍</button>
-                </div>
-            </form>
+            <div class="d-flex align-items-center gap-2 ms-auto">
 
-            <div class="d-flex align-items-center gap-2">
-
-                <a th:href="@{/admin/nuevo-libro}" class="btn btn-danger btn-sm fw-bold"
+                <a th:href="@{/admin/nuevo-libro}" class="btn btn-danger btn-sm fw-bold me-2"
                    sec:authorize="hasRole('ADMIN')">
                     + Subir Libro
                 </a>
 
-                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
-                    <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard" class="btn btn-danger btn-sm me-2">
-                        ⚙️ Panel Admin
-                    </a>
-                    <p class="text-white text-decoration-none small me-2">
-                        Hola, <span sec:authentication="name" class="fw-bold text-danger">Usuario</span>
-                    </p>
-                    <a href="/perfil" class="text-decoration-none me-3 d-flex align-items-center text-white">
-                        <div style="width: 32px; height: 32px; background-color: #E50914; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 8px;">
-                            <i class="bi bi-person-fill"></i>
-                        </div>
-                        <span class="d-none d-md-block">Mi Perfil</span>
-                    </a>
-                    <form th:action="@{/logout}" method="post" class="m-0">
-                        <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+
+                    <form action="/" method="get" class="search-container d-none d-md-block me-3">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="q" class="form-control search-input" placeholder="Títulos, autores, géneros...">
                     </form>
+
+                    <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard"
+                       class="btn btn-sm btn-outline-danger me-3 fw-bold">
+                        <i class="bi bi-gear-fill"></i> Panel
+                    </a>
+
+                    <div class="d-flex align-items-center gap-3 border-start border-secondary ps-3">
+
+                        <div class="text-end lh-1 d-none d-lg-block">
+                            <span style="font-size: 0.75rem;">Hola,</span><br>
+                            <span class="fw-bold" sec:authentication="name">Usuario</span>
+                        </div>
+
+                        <a href="/perfil" class="position-relative" title="Ir a Mi Perfil">
+                            <img th:src="'https://ui-avatars.com/api/?name=' + ${#authentication.name} + '&background=E50914&color=fff&size=40&font-size=0.5'"
+                                 class="rounded"
+                                 alt="Perfil"
+                                 width="40" height="40"
+                                 style="border: 2px solid #141414; transition: transform 0.2s;">
+                        </a>
+
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-link text-secondary p-0 ms-1" title="Cerrar Sesión">
+                                <i class="bi bi-box-arrow-right fs-4 hover-text-white"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-
-                <a sec:authorize="!isAuthenticated()" href="/login" class="btn btn-primary btn-sm">Iniciar Sesión</a>
             </div>
-
         </div>
     </div>
 </nav>

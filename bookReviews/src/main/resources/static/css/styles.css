@@ -16,17 +16,17 @@ body {
 }
 
 .navbar-brand {
-    color: #E50914 !important; /* Rojo BookFlix */
+    color: #E50914 !important;
     font-weight: bold;
     font-size: 1.5rem;
 }
 
 /* --- CARRUSEL (Mantenemos tu nombre de clase) --- */
 .scrolling-wrapper {
-    display: flex;           /* Flexbox alinea mejor que inline-block */
+    display: flex;
     overflow-x: auto;        /* Scroll horizontal */
     overflow-y: hidden;
-    gap: 15px;               /* Espacio entre libros */
+    gap: 15px;
     padding-bottom: 20px;
     padding-left: 20px;
     padding-right: 20px;
@@ -52,7 +52,7 @@ body {
 /* --- TARJETAS DE LIBROS --- */
 .book-card {
     flex: 0 0 auto; /* No estirar ni encoger */
-    width: 200px;   /* Ancho fijo */
+    width: 200px;
     transition: transform 0.3s ease;
     cursor: pointer;
     position: relative;
@@ -96,4 +96,43 @@ h2 {
     border-color: #E50914;
     color: white;
     box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25);
+}
+
+/* --- BARRA DE BÚSQUEDA MODERNA --- */
+.search-container {
+    position: relative;
+    margin-right: 20px;
+}
+
+.search-input {
+    background-color: #141414;
+    border: 1px solid #ccc;
+    color: white !important;
+    padding: 8px 15px 8px 40px;
+    border-radius: 5px;
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    background-color: #000;
+    border-color: #E50914;
+    box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+    outline: none;
+    width: 300px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    pointer-events: none;
+}
+
+/* Placeholder gris */
+.search-input::placeholder {
+    color: #888;
+    font-style: italic;
 }
