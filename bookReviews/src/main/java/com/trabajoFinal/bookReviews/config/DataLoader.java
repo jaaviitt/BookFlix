@@ -7,7 +7,6 @@ import com.trabajoFinal.bookReviews.repository.UsuarioRepository;
 import com.trabajoFinal.bookReviews.service.GoogleBooksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.jdbc.core.JdbcTemplate; // <--- 1. IMPORT NUEVO
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -29,36 +28,10 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate; // <--- 2. HERRAMIENTA PARA SALVAR DATOS
-
     private final String UPLOAD_DIR = "uploads/";
 
     @Override
     public void run(String... args) throws Exception {
-
-        // --- 0. MIGRACIÓN DE DATOS (SALVAR GÉNEROS ANTIGUOS) ---
-        // Este bloque intenta coger lo que escribiste a mano en la columna antigua
-        // y moverlo a la nueva lista.
-        try {
-            // Comprobamos si la columna vieja "genero" (singular) todavía existe y tiene datos
-            // La consulta copia: ID del libro + Texto del género -> Tabla nueva
-            String sqlMigracion = "INSERT INTO libro_generos (libro_id, genero) " +
-                    "SELECT id, genero FROM libros " +
-                    "WHERE genero IS NOT NULL " +
-                    "AND id NOT IN (SELECT libro_id FROM libro_generos)";
-
-            int filasRecuperadas = jdbcTemplate.update(sqlMigracion);
-
-            if (filasRecuperadas > 0) {
-                System.out.println("✅ MIGRACIÓN ÉXITOSA: Se han recuperado los géneros de " + filasRecuperadas + " libros.");
-            }
-        } catch (Exception e) {
-            // Si esto falla es porque ya se migró o la columna vieja ya no existe. No pasa nada.
-            System.out.println("ℹ️ No se requirió migración o la estructura ya está actualizada.");
-        }
-        // --------------------------------------------------------
-
 
         // --- 1. CREAR ADMIN (Si no existe) ---
         if (usuarioRepository.findByUsername("admin").isEmpty()) {
@@ -66,7 +39,7 @@ public class DataLoader implements CommandLineRunner {
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setEmail("admin@bookflix.com");
-
+            // Le damos ambos roles para que pueda entrar al panel y ver la web normal
             admin.setRoles(List.of("ROLE_ADMIN", "ROLE_USER"));
 
             usuarioRepository.save(admin);
@@ -77,6 +50,7 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("📂 INICIANDO ESCANEO DE LIBROS...");
         File carpeta = new File(UPLOAD_DIR);
 
+        // Si la carpeta uploads no existe, la crea
         if (!carpeta.exists()) {
             carpeta.mkdirs();
             return;
@@ -85,10 +59,9 @@ public class DataLoader implements CommandLineRunner {
         File[] archivos = carpeta.listFiles();
         if (archivos != null) {
             for (File archivo : archivos) {
+                // Filtramos solo archivos PDF
                 if (archivo.isFile() && archivo.getName().toLowerCase().endsWith(".pdf")) {
                     procesarLibro(archivo);
-                    // Pausa para Google
-                    Thread.sleep(2000);
                 }
             }
         }
@@ -96,17 +69,20 @@ public class DataLoader implements CommandLineRunner {
 
     private void procesarLibro(File archivo) {
         String nombreArchivo = archivo.getName();
+        // Ruta relativa para que el navegador pueda acceder a ella
         String rutaRelativa = "/uploads/" + nombreArchivo;
 
+        // Si ya existe en la base de datos, lo saltamos para no duplicar
         if (libroRepository.existsByRutaPdf(rutaRelativa)) {
             return;
         }
 
-        System.out.println("🔍 Procesando: " + nombreArchivo);
+        System.out.println("🔍 Nuevo libro detectado: " + nombreArchivo);
 
         Libro nuevoLibro = new Libro();
         nuevoLibro.setRutaPdf(rutaRelativa);
 
+        // Intentar sacar título y autor del nombre del archivo (Ej: "Titulo - Autor.pdf")
         String nombreSinExt = nombreArchivo.replace(".pdf", "");
         if (nombreSinExt.contains(" - ")) {
             String[] partes = nombreSinExt.split(" - ");
@@ -114,17 +90,17 @@ public class DataLoader implements CommandLineRunner {
             if (partes.length > 1) nuevoLibro.setAutor(partes[1].trim());
         } else {
             nuevoLibro.setTitulo(nombreSinExt);
-            nuevoLibro.setAutor("");
+            nuevoLibro.setAutor("Autor Desconocido");
         }
 
-        // Valores por defecto (AHORA USANDO LISTA)
-        nuevoLibro.setGeneros(List.of("General")); // <--- CORREGIDO PARA USAR LISTA
+        // Valores por defecto (usando la nueva Lista de géneros)
+        nuevoLibro.setGeneros(List.of("General"));
         nuevoLibro.setAnioPublicacion(2024);
         nuevoLibro.setSinopsis("Sinopsis pendiente...");
 
+        // Llamar al servicio para buscar portada y datos extra en internet
         googleBooksService.rellenarDatosLibro(nuevoLibro);
 
         libroRepository.save(nuevoLibro);
-        System.out.println("   --> Guardado: " + nuevoLibro.getTitulo());
     }
 }

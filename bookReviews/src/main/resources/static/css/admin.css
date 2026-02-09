@@ -1,0 +1,101 @@
+/* src/main/resources/static/css/admin.css */
+
+/* --- CONTENEDOR PRINCIPAL DEL FORMULARIO --- */
+.admin-container {
+    background-color: #141414; /* Negro fondo */
+    min-height: 100vh;
+    padding-bottom: 50px;
+    color: white;
+}
+
+.admin-card {
+    background-color: rgba(0, 0, 0, 0.75); /* Negro semitransparente */
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 40px;
+    margin-top: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    max-width: 800px; /* Que no sea excesivamente ancho */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Título del formulario */
+.admin-title {
+    color: white;
+    font-weight: bold;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #E50914; /* Línea roja Netflix */
+    padding-bottom: 10px;
+}
+
+/* --- LABELS (ETIQUETAS) --- */
+.form-label {
+    color: #b3b3b3; /* Gris claro */
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* --- INPUTS (CAJAS DE TEXTO) --- */
+.form-control {
+    background-color: #333 !important;
+    border: 1px solid #333 !important;
+    color: white !important;
+    height: 50px; /* Más altos, más modernos */
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    background-color: #444 !important;
+    border-color: #E50914 !important; /* Borde rojo al escribir */
+    box-shadow: none !important; /* Quitar el brillo azul de Bootstrap */
+    color: white !important;
+}
+
+/* Placeholder (texto de ayuda dentro del input) */
+.form-control::placeholder {
+    color: #777;
+}
+
+/* --- INPUT DE ARCHIVO (EL MÁS FEO DE ARREGLAR) --- */
+input[type="file"].form-control {
+    padding-top: 10px; /* Centrar texto verticalmente */
+    height: auto;
+}
+
+/* Estilo del botón "Seleccionar archivo" dentro del input */
+input[type="file"]::file-selector-button {
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-right: 15px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #E50914; /* Rojo al pasar el ratón */
+}
+
+/* --- BOTÓN DE PUBLICAR --- */
+.btn-submit {
+    background-color: #E50914;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    width: 100%; /* Botón ancho */
+    margin-top: 20px;
+    transition: transform 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #f40612;
+    transform: scale(1.02);
+}

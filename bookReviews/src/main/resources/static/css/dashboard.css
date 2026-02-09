@@ -1,0 +1,186 @@
+/* src/main/resources/static/css/dashboard.css */
+
+/* --- Eliminación padding heredado para las barras superiores --- */
+body {
+    padding-top: 0 !important;
+    margin: 0px;
+}
+/* --- BADGE SUPREMO --- */
+.bg-warning {
+    background-color: #ffd700 !important; /* Oro puro */
+    color: #000 !important;
+    border: 1px solid #e5c100;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); /* Brillo dorado */
+}
+
+/* --- HEADER DEL DASHBOARD --- */
+.dashboard-header {
+    background-color: #000000;
+    border-bottom: 1px solid #333;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-title {
+    color: #E50914; /* Rojo Netflix */
+    font-weight: 800;
+    font-size: 2rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- TARJETAS CONTENEDORAS --- */
+.dashboard-card {
+    background-color: #181818; /* Gris oscuro */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.card-header-custom {
+    background-color: #222;
+    padding: 20px 30px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title-text {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+/* --- TABLA MODERNA --- */
+.table-admin {
+    width: 100%;
+    margin-bottom: 0;
+    color: #b3b3b3;
+    border-collapse: collapse;
+}
+
+.table-admin thead th {
+    background-color: #2c2c2c;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 15px;
+    border: none;
+}
+
+.table-admin tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-top: 1px solid #333;
+    color: #e5e5e5;
+}
+
+.table-admin tbody tr:hover {
+    background-color: #252525;
+}
+
+/* --- AVATARES REDONDOS --- */
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background-color: #E50914;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-right: 12px;
+}
+
+.user-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* --- BADGES (ETIQUETAS DE ROL) --- */
+.badge-role {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background-color: #333;
+    color: #ccc;
+    border: 1px solid #444;
+}
+
+.badge-role.admin {
+    border-color: #E50914;
+    color: #E50914;
+    background-color: rgba(229, 9, 20, 0.1);
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+
+/* Contenedor flexible para alinear los botones */
+.actions-grid {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Estilo base del botón (Cuadrado) */
+.action-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+/* --- BOTÓN EDITAR / ROL (Estilo Plata) --- */
+.action-btn.edit {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo gris transparente */
+    border: 1px solid #666;
+    color: #ccc;
+}
+
+.action-btn.edit:hover {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #141414;
+    transform: translateY(-2px);
+}
+
+/* --- BOTÓN ELIMINAR (Estilo Rojo Neon) --- */
+.action-btn.delete {
+    background-color: rgba(229, 9, 20, 0.1);
+    border: 1px solid #E50914;
+    color: #E50914;
+}
+
+.action-btn.delete:hover {
+    background-color: #E50914;
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(229, 9, 20, 0.6);
+    transform: translateY(-2px);
+}
+
+/* --- PESTAÑAS (TABS) --- */
+.nav-pills .nav-link {
+    color: #888;
+    background: transparent;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #E50914;
+    color: white;
+}

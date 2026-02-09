@@ -1,54 +1,44 @@
-/* styles.css - Estilos Globales (Navbar, Fondo, Tipografía) */
+/* src/main/resources/static/css/styles.css */
 
+/* --- GLOBALES --- */
 body {
     background-color: #141414;
     color: white;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding-top: 80px; /* Espacio para la navbar fija */
+    overflow-x: hidden;
 }
 
-/* Navbar Global */
+/* --- NAVBAR --- */
 .navbar {
     background-color: #000000;
     border-bottom: 1px solid #222;
 }
 
 .navbar-brand {
-    color: #E50914 !important;
+    color: #E50914 !important; /* Rojo BookFlix */
     font-weight: bold;
     font-size: 1.5rem;
 }
 
-/* Botón Rojo Global */
-.btn-netflix {
-    background-color: #E50914;
-    color: white;
-    border: none;
-    transition: background-color 0.3s;
-}
-
-.btn-netflix:hover {
-    background-color: #b20710;
-    color: white;
-}
-
-/* --- ESTILOS GENERALES --- */
-body {
-    background-color: #141414; /* Negro Netflix */
-    color: white;
-}
-
-/* --- CARRUSEL HORIZONTAL (Estilo Netflix) --- */
+/* --- CARRUSEL (Mantenemos tu nombre de clase) --- */
 .scrolling-wrapper {
-    overflow-x: auto;
+    display: flex;           /* Flexbox alinea mejor que inline-block */
+    overflow-x: auto;        /* Scroll horizontal */
     overflow-y: hidden;
-    white-space: nowrap;
+    gap: 15px;               /* Espacio entre libros */
     padding-bottom: 20px;
-    -webkit-overflow-scrolling: touch; /* Scroll suave en móviles */
+    padding-left: 20px;
+    padding-right: 20px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Ocultar barra de scroll (Chrome/Safari/Edge) */
+/* Barra de scroll personalizada */
 .scrolling-wrapper::-webkit-scrollbar {
     height: 8px;
+}
+.scrolling-wrapper::-webkit-scrollbar-track {
     background: transparent;
 }
 .scrolling-wrapper::-webkit-scrollbar-thumb {
@@ -60,29 +50,50 @@ body {
 }
 
 /* --- TARJETAS DE LIBROS --- */
-.card-block {
-    display: inline-block;
-    width: 200px;  /* Ancho fijo */
-    margin-right: 15px;
-    vertical-align: top;
-    white-space: normal; /* Para que el título baje de línea si es largo */
-}
-
 .book-card {
-    background-color: transparent;
-    border: none;
+    flex: 0 0 auto; /* No estirar ni encoger */
+    width: 200px;   /* Ancho fijo */
     transition: transform 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border: none;
+    background: transparent;
 }
 
 .book-card:hover {
-    transform: scale(1.05); /* Zoom al pasar el ratón */
+    transform: scale(1.1); /* Efecto Zoom */
     z-index: 10;
-    cursor: pointer;
 }
 
-.book-cover {
+.book-card img {
+    width: 100%;
     height: 300px;
     object-fit: cover;
     border-radius: 4px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+/* --- TÍTULOS DE GÉNERO --- */
+h2 {
+    margin-left: 20px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e5e5e5;
+}
+
+/* --- FORMULARIOS DEL ADMIN/DASHBOARD --- */
+/* (Estilos para inputs que NO son del login) */
+.form-control, .form-select {
+    background-color: #333;
+    border: 1px solid #444;
+    color: white;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #444;
+    border-color: #E50914;
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25);
 }

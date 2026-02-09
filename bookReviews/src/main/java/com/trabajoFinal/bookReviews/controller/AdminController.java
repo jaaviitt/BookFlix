@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -152,19 +152,32 @@ public class AdminController {
         return "redirect:/admin/dashboard";
     }
 
-    // --- 5. GESTIÓN DE USUARIOS ---
+    // --- 5. GESTIÓN DE USUARIOS (CON PROTECCIÓN SUPREMA) ---
+
     @PostMapping("/usuario/{id}/cambiar-rol")
     public String cambiarRolUsuario(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
+
         if (usuario != null) {
-            List<String> rolesActuales = usuario.getRoles();
-            if (rolesActuales.contains("ROLE_ADMIN")) {
-                // Si es admin, lo bajamos a user (usamos ArrayList mutable por si acaso)
-                usuario.setRoles(List.of("ROLE_USER"));
-            } else {
-                // Si es user, lo subimos a admin
-                usuario.setRoles(List.of("ROLE_ADMIN", "ROLE_USER"));
+            // 🛡️ PROTECCIÓN SUPREMA: Si es el admin principal, NO SE TOCA.
+            if ("admin".equalsIgnoreCase(usuario.getUsername())) {
+                System.out.println("⛔ INTENTO DE MODIFICAR AL SUPER ADMIN BLOQUEADO.");
+                return "redirect:/admin/dashboard?error=superadmin";
             }
+
+            // Lógica de cambio de rol
+            List<String> rolesActuales = usuario.getRoles();
+
+            if (rolesActuales.contains("ROLE_ADMIN")) {
+                // ANTES (Fallaba): usuario.setRoles(List.of("ROLE_USER"));
+                // AHORA (Correcto): Usamos ArrayList mutable
+                usuario.setRoles(new ArrayList<>(List.of("ROLE_USER")));
+            } else {
+                // ANTES (Fallaba): usuario.setRoles(List.of("ROLE_ADMIN", "ROLE_USER"));
+                // AHORA (Correcto): Usamos ArrayList mutable
+                usuario.setRoles(new ArrayList<>(List.of("ROLE_ADMIN", "ROLE_USER")));
+            }
+
             usuarioRepository.save(usuario);
         }
         return "redirect:/admin/dashboard";
@@ -172,7 +185,16 @@ public class AdminController {
 
     @PostMapping("/usuario/{id}/eliminar")
     public String eliminarUsuario(@PathVariable Long id) {
-        usuarioRepository.deleteById(id);
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+
+        // 🛡️ PROTECCIÓN SUPREMA
+        if (usuario != null) {
+            if ("admin".equalsIgnoreCase(usuario.getUsername())) {
+                System.out.println("⛔ INTENTO DE ELIMINAR AL SUPER ADMIN BLOQUEADO.");
+                return "redirect:/admin/dashboard?error=superadmin";
+            }
+            usuarioRepository.deleteById(id);
+        }
         return "redirect:/admin/dashboard";
     }
 }
