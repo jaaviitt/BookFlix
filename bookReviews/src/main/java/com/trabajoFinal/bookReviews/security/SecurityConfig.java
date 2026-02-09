@@ -14,15 +14,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        // Permitimos entrar a la home y ver el CSS sin contraseña
-                        .requestMatchers("/", "/home",  "/registro", "/css/**", "/img/**", "/js/**").permitAll()
-                        // Todo lo demás requiere login
-                        .anyRequest().authenticated()
+                        // 1. Permitir acceso a recursos estáticos (CSS, Imágenes, Uploads) y páginas públicas
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/uploads/**").permitAll()
+                        .requestMatchers("/registro", "/login").permitAll()
+                        .anyRequest().authenticated() // Todo lo demás requiere login
                 )
                 .formLogin((form) -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login") // La ruta donde se envía el formulario (POST)
+                        .defaultSuccessUrl("/", true) // A dónde ir si el login es correcto
                         .permitAll()
                 )
-                .logout((logout) -> logout.permitAll());
+                .logout((logout) -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout") // Al salir, volvemos al login
+                        .permitAll()
+                );
 
         return http.build();
     }

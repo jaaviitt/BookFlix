@@ -1,26 +1,21 @@
 package com.trabajoFinal.bookReviews.controller;
 
 import com.trabajoFinal.bookReviews.entity.Libro;
+import com.trabajoFinal.bookReviews.entity.Usuario;
 import com.trabajoFinal.bookReviews.repository.LibroRepository;
-import com.trabajoFinal.bookReviews.service.GoogleBooksService; // <--- IMPORTANTE
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
+import com.trabajoFinal.bookReviews.repository.UsuarioRepository;
+import com.trabajoFinal.bookReviews.service.GoogleBooksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,10 +25,26 @@ public class AdminController {
     private LibroRepository libroRepository;
 
     @Autowired
-    private GoogleBooksService googleBooksService; // <--- INYECCIÓN DEL SERVICIO
+    private UsuarioRepository usuarioRepository; // RECUPERADO
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/"; // Ruta ajustada
-    private static final String IMG_DIR = "src/main/resources/static/img/";
+    @Autowired
+    private GoogleBooksService googleBooksService;
+
+    // RECUPERADO: Ruta a la raíz del proyecto para ver los archivos al instante
+    private static final String UPLOAD_DIR = "uploads/";
+
+    // --- 1. EL CENTRO DE COMANDOS (DASHBOARD) ---
+    // ESTE MÉTODO FALTABA Y ES EL MÁS IMPORTANTE
+    @GetMapping("/dashboard")
+    public String adminDashboard(Model model) {
+        List<Libro> libros = libroRepository.findAll();
+        List<Usuario> usuarios = usuarioRepository.findAll();
+
+        model.addAttribute("libros", libros);
+        model.addAttribute("usuarios", usuarios);
+
+        return "admin/dashboard";
+    }
 
     @GetMapping("/nuevo-libro")
     public String mostrarFormulario(Model model) {
@@ -44,51 +55,104 @@ public class AdminController {
     @PostMapping("/guardar")
     public String guardarLibro(Libro libro, @RequestParam("archivoPdf") MultipartFile archivo) {
 
-        // 1. Intentamos que Google rellene los datos
+        // 1. Intentamos rellenar con Google/OpenLibrary
         googleBooksService.rellenarDatosLibro(libro);
 
-        // --- CORRECCIÓN DE SEGURIDAD ---
-        // Si Google ha fallado o no ha encontrado nada, ponemos valores por defecto
-        // para que la base de datos no se queje.
-
-        if (libro.getAutor() == null || libro.getAutor().isEmpty()) {
+        // --- PARACAÍDAS DE SEGURIDAD ---
+        if (libro.getAutor() == null || libro.getAutor().trim().isEmpty()) {
             libro.setAutor("Autor Desconocido");
         }
-
-        if (libro.getGenero() == null || libro.getGenero().isEmpty()) {
+        if (libro.getGenero() == null || libro.getGenero().trim().isEmpty()) {
             libro.setGenero("General");
         }
-
-        if (libro.getAnioPublicacion() == null) {
-            libro.setAnioPublicacion(2024); // Año actual o desconocido
+        if (libro.getAnioPublicacion() == null || libro.getAnioPublicacion() < 1000) {
+            libro.setAnioPublicacion(2024);
         }
-
-        if (libro.getSinopsis() == null || libro.getSinopsis().isEmpty()) {
+        if (libro.getSinopsis() == null || libro.getSinopsis().trim().isEmpty()) {
             libro.setSinopsis("Sin sinopsis disponible.");
         }
-        // -------------------------------
 
-        // 2. Procesamos el Archivo PDF (Esto déjalo igual que lo tenías)
+        // 2. Procesar PDF (CÓDIGO RECUPERADO)
         if (!archivo.isEmpty()) {
             try {
-                // ... (tu código de subida de archivos) ...
-                // Asegúrate de que las rutas son las correctas:
-                // new File("src/main/resources/static/uploads/").mkdirs();
+                // Crear directorio si no existe
+                Path directorioImagenes = Paths.get(UPLOAD_DIR);
+                if (!Files.exists(directorioImagenes)) {
+                    Files.createDirectories(directorioImagenes);
+                }
 
-                // NOTA: Para este ejemplo resumo tu código anterior aquí:
-                String nombreArchivo = archivo.getOriginalFilename();
-                // ... guardar archivo ...
-                libro.setRutaPdf("/uploads/" + nombreArchivo);
-                // ... generar portada ...
-                // libro.setImagenUrl(...)
+                // Guardar archivo
+                byte[] bytes = archivo.getBytes();
+                Path rutaCompleta = Paths.get(UPLOAD_DIR + archivo.getOriginalFilename());
+                Files.write(rutaCompleta, bytes);
+
+                // Asignar ruta al libro
+                libro.setRutaPdf("/uploads/" + archivo.getOriginalFilename());
+
+                // NOTA: Si tenías código para generar portada con PDFBox aquí,
+                // el servicio de GoogleBooksService ya intenta buscar una portada online primero.
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        // 3. Guardamos (Ahora ya no fallará porque no hay nulos)
+        // 3. Guardar
         libroRepository.save(libro);
-        return "redirect:/";
+        return "redirect:/admin/dashboard"; // Volvemos al dashboard en vez de al home
+    }
+
+    // --- 2. GESTIÓN DE USUARIOS (RECUPERADO) ---
+
+    @PostMapping("/usuario/{id}/cambiar-rol")
+    public String cambiarRolUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario != null) {
+            if (usuario.getRoles().contains("ROLE_ADMIN")) {
+                usuario.setRoles(Collections.singletonList("ROLE_USER"));
+            } else {
+                usuario.setRoles(Collections.singletonList("ROLE_ADMIN"));
+            }
+            usuarioRepository.save(usuario);
+        }
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/usuario/{id}/eliminar")
+    public String eliminarUsuario(@PathVariable Long id) {
+        usuarioRepository.deleteById(id);
+        return "redirect:/admin/dashboard";
+    }
+
+    // --- 3. GESTIÓN DE LIBROS ---
+
+    @GetMapping("/libro/{id}/editar")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+        Libro libro = libroRepository.findById(id).orElse(null);
+        if (libro == null) return "redirect:/admin/dashboard";
+
+        model.addAttribute("libro", libro);
+        return "admin/editar_libro";
+    }
+
+    @PostMapping("/libro/{id}/actualizar")
+    public String actualizarLibro(@PathVariable Long id, @ModelAttribute Libro libro) {
+        Libro original = libroRepository.findById(id).orElse(null);
+        if (original != null) {
+            original.setTitulo(libro.getTitulo());
+            original.setAutor(libro.getAutor());
+            original.setGenero(libro.getGenero());
+            original.setSinopsis(libro.getSinopsis());
+            original.setImagenUrl(libro.getImagenUrl());
+
+            libroRepository.save(original);
+        }
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/libro/{id}/eliminar")
+    public String eliminarLibro(@PathVariable Long id) {
+        libroRepository.deleteById(id);
+        return "redirect:/admin/dashboard";
     }
 }

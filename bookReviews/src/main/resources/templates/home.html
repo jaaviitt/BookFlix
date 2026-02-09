@@ -8,7 +8,7 @@
 </head>
 <body class="bg-black text-white"> <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black bg-opacity-75">
     <div class="container-fluid">
-        <a class="navbar-brand text-danger fw-bold fs-3" href="#">BOOKFLIX</a>
+        <a class="navbar-brand text-danger fw-bold fs-3" href="/">BOOKFLIX</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
@@ -17,8 +17,18 @@
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link active" href="/">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Géneros</a></li>
             </ul>
+
+            <form class="d-flex ms-auto me-3" action="/" method="get">
+                <div class="input-group">
+                    <input class="form-control form-control-sm bg-dark text-white border-secondary"
+                           type="search"
+                           name="q"
+                           placeholder="Títulos, autores, géneros..."
+                           aria-label="Search">
+                    <button class="btn btn-outline-secondary btn-sm" type="submit">🔍</button>
+                </div>
+            </form>
 
             <div class="d-flex align-items-center gap-2">
 
@@ -28,8 +38,12 @@
                 </a>
 
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
-                    <span class="text-white small">Hola, <span sec:authentication="name" class="fw-bold">Usuario</span></span>
-                    <form th:action="@{/logout}" method="post" class="m-0">
+                    <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard" class="btn btn-danger btn-sm me-2">
+                        ⚙️ Panel Admin
+                    </a>
+                    <a href="/perfil" class="text-white text-decoration-none small me-2">
+                        Hola, <span sec:authentication="name" class="fw-bold text-danger">Usuario</span>
+                    </a>                    <form th:action="@{/logout}" method="post" class="m-0">
                         <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
                     </form>
                 </div>

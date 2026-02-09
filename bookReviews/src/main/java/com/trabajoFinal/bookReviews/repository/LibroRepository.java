@@ -15,4 +15,6 @@ public interface LibroRepository extends JpaRepository<Libro, Long> {
 
     // Buscar libros por un género concreto
     List<Libro> findByGenero(String genero);
+
+    List<Libro> findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCaseOrGeneroContainingIgnoreCase(String titulo, String autor, String genero);
 }

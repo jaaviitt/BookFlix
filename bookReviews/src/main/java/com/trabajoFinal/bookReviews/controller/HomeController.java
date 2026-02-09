@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam; // <--- IMPORTANTE
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,26 +18,41 @@ public class HomeController {
     @Autowired
     private LibroRepository libroRepository;
 
+    // AQUI ESTABA EL ERROR: Faltaba añadir "@RequestParam..." dentro de los paréntesis
     @GetMapping("/")
-    public String index(Model model) {
-        // 1. Obtenemos todos los géneros únicos disponibles
-        List<String> generos = libroRepository.findDistinctGeneros();
+    public String index(Model model, @RequestParam(value = "q", required = false) String query) {
 
-        // 2. Creamos un mapa para guardar: "Ciencia Ficción" -> [Libro1, Libro2...]
-        // Usamos LinkedHashMap para mantener el orden
+        // MAPA para guardar los libros: "Nombre Categoria" -> [Lista de Libros]
         Map<String, List<Libro>> librosPorGenero = new LinkedHashMap<>();
 
-        for (String genero : generos) {
-            // Buscamos los libros de este género
-            List<Libro> libros = libroRepository.findByGenero(genero);
+        // CASO 1: EL USUARIO HA BUSCADO ALGO
+        if (query != null && !query.isEmpty()) {
+            // Buscamos en Título, Autor o Género
+            List<Libro> resultados = libroRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCaseOrGeneroContainingIgnoreCase(query, query, query);
 
-            // Solo añadimos la categoría si tiene libros
-            if (!libros.isEmpty()) {
-                librosPorGenero.put(genero, libros);
+            // Guardamos los resultados en una "categoría" especial
+            if (!resultados.isEmpty()) {
+                librosPorGenero.put("Resultados para: " + query, resultados);
+            } else {
+                librosPorGenero.put("No se encontraron resultados para: " + query, List.of());
+            }
+
+            // CASO 2: NO HAY BÚSQUEDA
+        } else {
+            List<String> generos = libroRepository.findDistinctGeneros();
+
+            for (String genero : generos) {
+                // Buscamos los libros de este género
+                List<Libro> libros = libroRepository.findByGenero(genero);
+
+                // Solo añadimos la categoría si tiene libros
+                if (!libros.isEmpty()) {
+                    librosPorGenero.put(genero, libros);
+                }
             }
         }
 
-        // 3. Pasamos el mapa a la vista
+        // Pasamos el mapa a la vista
         model.addAttribute("librosPorGenero", librosPorGenero);
 
         return "home";

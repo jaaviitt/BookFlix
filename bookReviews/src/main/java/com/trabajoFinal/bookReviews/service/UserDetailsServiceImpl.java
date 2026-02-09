@@ -3,11 +3,16 @@ package com.trabajoFinal.bookReviews.service;
 import com.trabajoFinal.bookReviews.entity.Usuario;
 import com.trabajoFinal.bookReviews.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -17,15 +22,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 1. Buscar el usuario en nuestra BBDD
+        // 1. Buscamos el usuario en la base de datos
         Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        // 2. Devolver un objeto User de Spring Security con nuestros datos
-        return User.builder()
-                .username(usuario.getUsername())
-                .password(usuario.getPassword())
-                .roles(usuario.getRol().replace("ROLE_", "")) // Spring espera "ADMIN", no "ROLE_ADMIN" aquí
-                .build();
+        // 2. Convertimos la LISTA de roles (Strings) a Permisos de Seguridad (GrantedAuthority)
+        List<GrantedAuthority> autoridades = usuario.getRoles().stream()
+                .map(rol -> new SimpleGrantedAuthority(rol))
+                .collect(Collectors.toList());
+
+        // 3. Devolvemos el objeto User oficial de Spring Security
+        return new User(
+                usuario.getUsername(),
+                usuario.getPassword(),
+                autoridades
+        );
     }
 }
