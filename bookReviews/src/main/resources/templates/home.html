@@ -38,9 +38,16 @@
                     <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard" class="btn btn-danger btn-sm me-2">
                         ⚙️ Panel Admin
                     </a>
-                    <a href="/perfil" class="text-white text-decoration-none small me-2">
+                    <p class="text-white text-decoration-none small me-2">
                         Hola, <span sec:authentication="name" class="fw-bold text-danger">Usuario</span>
-                    </a>                    <form th:action="@{/logout}" method="post" class="m-0">
+                    </p>
+                    <a href="/perfil" class="text-decoration-none me-3 d-flex align-items-center text-white">
+                        <div style="width: 32px; height: 32px; background-color: #E50914; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 8px;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <span class="d-none d-md-block">Mi Perfil</span>
+                    </a>
+                    <form th:action="@{/logout}" method="post" class="m-0">
                         <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
                     </form>
                 </div>

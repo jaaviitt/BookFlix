@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Mi Perfil - BookFlix</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/admin.css}" rel="stylesheet">
 </head>
 <body class="bg-black text-white">
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black bg-opacity-75">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black bg-opacity-90 border-bottom border-secondary">
     <div class="container-fluid">
         <a class="navbar-brand text-danger fw-bold fs-3" href="/">BOOKFLIX</a>
         <div class="d-flex align-items-center gap-2 ms-auto">
@@ -24,57 +24,93 @@
     <div class="row">
 
         <div class="col-md-4 mb-4">
-            <div class="card bg-dark text-white border-secondary shadow">
-                <div class="card-body text-center p-5">
+
+            <div class="card bg-dark text-white border-secondary shadow mb-4">
+                <div class="card-body text-center p-4">
                     <img th:src="'https://ui-avatars.com/api/?name=' + ${usuario.username} + '&background=random&size=128'"
                          class="rounded-circle mb-3 border border-3 border-danger" alt="Avatar">
 
                     <h3 class="card-title fw-bold" th:text="${usuario.username}">Usuario</h3>
-                    <p class="text-muted mb-4">Miembro de BookFlix</p>
 
-                    <div class="d-flex justify-content-center gap-4 text-center">
+                    <span class="badge bg-danger mb-3" th:if="${usuario.roles.contains('ROLE_ADMIN')}">ADMINISTRADOR</span>
+                    <p class="mb-4" th:unless="${usuario.roles.contains('ROLE_ADMIN')}">Miembro de BookFlix</p>
+
+                    <div class="text-center border-top border-secondary pt-3">
                         <div>
                             <h4 class="fw-bold mb-0" th:text="${totalResenas}">0</h4>
-                            <small class="text-secondary">Reseñas</small>
-                        </div>
-                        <div>
-                            <h4 class="fw-bold mb-0">0</h4> <small class="text-secondary">Favoritos</small>
+                            <small class="text-secondary">Reseñas publicadas</small>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="card bg-dark text-white border-secondary shadow">
+                <div class="card-header border-secondary fw-bold text-uppercase text-danger">
+                    ⚙️ Editar Mis Datos
+                </div>
+                <div class="card-body">
+
+                    <div th:if="${param.exito}" class="alert alert-success py-2 small mb-3">
+                        ✅ Datos actualizados correctamente.
+                    </div>
+
+                    <form th:action="@{/perfil/guardar}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label small">Correo Electrónico</label>
+                            <input type="email" name="email" class="form-control bg-secondary text-white border-0"
+                                   th:value="${usuario.email}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small">Nueva Contraseña</label>
+                            <input type="password" name="newPassword" class="form-control bg-secondary text-white border-0"
+                                   placeholder="Dejar vacío para no cambiar">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
 
         <div class="col-md-8">
             <h3 class="border-bottom border-secondary pb-2 mb-4">Historial de Reseñas</h3>
 
-            <div th:if="${resenas.empty}" class="text-center py-5 text-muted">
+            <div th:if="${resenas.empty}" class="text-center py-5">
                 <h4>Aún no has escrito ninguna reseña.</h4>
                 <p>¡Lee un libro y cuéntanos qué te parece!</p>
                 <a href="/" class="btn btn-primary mt-2">Explorar Libros</a>
             </div>
 
-            <div th:each="resena : ${resenas}" class="card bg-dark text-white border-secondary mb-3">
+            <div th:each="resena : ${resenas}" class="card bg-dark text-white border-secondary mb-3 hover-effect">
                 <div class="card-body d-flex gap-3">
 
-                    <img th:src="${resena.libro.imagenUrl != null ? resena.libro.imagenUrl : 'https://via.placeholder.com/60x90'}"
-                         style="width: 60px; height: 90px; object-fit: cover; border-radius: 4px;">
+                    <a th:href="@{/libro/{id}(id=${resena.libro.id})}">
+                        <img th:src="${resena.libro.imagenUrl != null ? resena.libro.imagenUrl : 'https://via.placeholder.com/60x90'}"
+                             style="width: 70px; height: 105px; object-fit: cover; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5);">
+                    </a>
 
                     <div class="w-100">
                         <div class="d-flex justify-content-between align-items-start">
                             <h5 class="card-title mb-1">
-                                <a th:href="@{/libro/{id}(id=${resena.libro.id})}" class="text-decoration-none text-white hover-underline">
+                                <a th:href="@{/libro/{id}(id=${resena.libro.id})}" class="text-decoration-none text-white fw-bold">
                                     <span th:text="${resena.libro.titulo}">Título Libro</span>
                                 </a>
                             </h5>
-                            <small class="text-muted" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
+                            <small class="text-secondary" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
                         </div>
 
-                        <div class="text-warning mb-2">
-                            <span th:each="i : ${#numbers.sequence(1, resena.puntuacion)}">★</span><span th:if="${resena.puntuacion < 5}" th:each="i : ${#numbers.sequence(resena.puntuacion + 1, 5)}" class="text-secondary">★</span>
+                        <div class="text-danger mb-2 fs-5">
+                            <span th:each="i : ${#numbers.sequence(1, resena.puntuacion)}">★</span><span th:if="${resena.puntuacion < 5}" th:each="i : ${#numbers.sequence(resena.puntuacion + 1, 5)}" class="text-secondary opacity-25">★</span>
                         </div>
 
-                        <p class="card-text text-light small fst-italic" th:text="'&quot;' + ${resena.comentario} + '&quot;'">Comentario</p>
+                        <p class="card-text text-light small fst-italic border-start border-3 border-secondary ps-3"
+                           th:text="'&quot;' + ${resena.comentario} + '&quot;'">
+                            Comentario
+                        </p>
                     </div>
                 </div>
             </div>
