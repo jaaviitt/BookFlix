@@ -2,9 +2,11 @@
 
 /* Imagen de fondo a pantalla completa */
 .hero-bg {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://assets.nflxext.com/ffe/siteui/vlv3/f841d4c7-10e1-40af-bcae-07a3f8dc141a/f6d7434e-d6de-4185-a6d4-c77a2d08737b/US-en-20220502-popsignuptwoweeks-perspective_alpha_website_medium.jpg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
+                      url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2000&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -13,12 +15,12 @@
 
 /* Tarjeta negra transparente */
 .login-card {
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.75); /* Fondo negro con opacidad */
     padding: 60px 68px 40px;
     border-radius: 4px;
     width: 100%;
     max-width: 450px;
-    min-height: 500px;
+    min-height: 500px; /* Altura mínima para que no quede aplastado */
     color: white;
 }
 
@@ -35,7 +37,7 @@
     background: #444;
     color: white;
     box-shadow: none;
-    border-bottom: 2px solid #e50914;
+    border-bottom: 2px solid #e50914; /* Línea roja al escribir */
 }
 
 .form-control-dark::placeholder {
@@ -43,7 +45,7 @@
 }
 
 /* Botón Rojo */
-.btn-netflix-primary {
+.btn-red-primary {
     background-color: #e50914;
     color: white;
     font-weight: bold;
@@ -52,9 +54,10 @@
     border-radius: 4px;
     font-size: 1rem;
     margin-top: 20px;
+    width: 100%; /* Para que ocupe todo el ancho */
 }
 
-.btn-netflix-primary:hover {
+.btn-red-primary:hover {
     background-color: #f40612;
 }
 

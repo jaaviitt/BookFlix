@@ -2,11 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title th:text="${libro.titulo} + ' - BookFlix'">Detalle Libro</title>
+    <title th:text="${libro.titulo} + ' - BookFlix'">Detalle del Libro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
-<body style="padding-top: 80px;" class="bg-black text-white">
+<body class="bg-black text-white">
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top px-4 bg-black bg-opacity-75">
     <a class="navbar-brand text-danger fw-bold fs-3" href="/">BOOKFLIX</a>
@@ -56,63 +57,73 @@
 
             <hr class="border-secondary my-5">
 
-            <div class="mt-4">
-                <h3 class="mb-4">Opiniones de la Comunidad</h3>
+            <div class="mt-5">
+                <h3 class="text-white border-bottom border-secondary pb-2 mb-4">Opiniones de la Comunidad</h3>
 
-                <div sec:authorize="isAuthenticated()" class="card bg-dark text-white border-secondary mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-danger">Deja tu reseña</h5>
-                        <form th:action="@{/libro/{id}/resena(id=${libro.id})}" method="post">
-                            <div class="mb-3">
-                                <label class="form-label text-secondary small">Puntuación</label>
-                                <select name="puntuacion" class="form-select bg-black text-white border-secondary" style="max-width: 200px;">
-                                    <option value="5">★★★★★ (Excelente)</option>
-                                    <option value="4">★★★★☆ (Muy bueno)</option>
-                                    <option value="3">★★★☆☆ (Bueno)</option>
-                                    <option value="2">★★☆☆☆ (Regular)</option>
-                                    <option value="1">★☆☆☆☆ (Malo)</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-secondary small">Comentario</label>
-                                <textarea name="comentario" class="form-control bg-black text-white border-secondary" rows="3" placeholder="¿Qué te ha parecido este libro?" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-danger btn-sm">Publicar Opinión</button>
-                        </form>
-                    </div>
-                </div>
+                <div sec:authorize="isAuthenticated()" class="review-form-card shadow">
+                    <h4 class="text-danger mb-3">Deja tu reseña</h4>
 
-                <div sec:authorize="!isAuthenticated()" class="alert alert-dark border-secondary text-white mb-4">
-                    <a href="/login" class="text-danger fw-bold text-decoration-none">Inicia sesión</a> para escribir una reseña.
-                </div>
+                    <form th:action="@{/libro/{id}/resena(id=${libro.id})}" method="post">
 
-                <div th:if="${resenas.empty}" class="text-secondary fst-italic mb-5">
-                    Nadie ha opinado sobre este libro todavía. ¡Sé el primero!
-                </div>
+                        <div class="mb-4">
+                            <label class="form-label text-light d-block mb-2 fw-bold">¿Cuántos libros le das?</label>
 
-                <div th:each="resena : ${resenas}" class="card bg-transparent border-bottom border-secondary mb-3 rounded-0">
-                    <div class="card-body ps-0">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="d-flex align-items-center">
-                                <img th:src="'https://ui-avatars.com/api/?name=' + ${resena.usuario.username} + '&background=random&size=32'" class="rounded-circle me-3" width="40">
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-white" th:text="${resena.usuario.username}">Usuario</h6>
-                                    <small class="text-muted" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
-                                </div>
-                            </div>
-                            <div class="text-danger">
-                                <span th:each="i : ${#numbers.sequence(1, resena.puntuacion)}">★</span><span th:if="${resena.puntuacion < 5}" th:each="i : ${#numbers.sequence(resena.puntuacion + 1, 5)}" class="text-secondary opacity-25">★</span>
+                            <div class="rating-books">
+                                <input type="radio" name="puntuacion" id="book5" value="5" required><label for="book5" title="Increíble"><i class="bi bi-book-fill"></i></label>
+                                <input type="radio" name="puntuacion" id="book4" value="4"><label for="book4" title="Muy bueno"><i class="bi bi-book-fill"></i></label>
+                                <input type="radio" name="puntuacion" id="book3" value="3"><label for="book3" title="Bueno"><i class="bi bi-book-fill"></i></label>
+                                <input type="radio" name="puntuacion" id="book2" value="2"><label for="book2" title="Regular"><i class="bi bi-book-fill"></i></label>
+                                <input type="radio" name="puntuacion" id="book1" value="1"><label for="book1" title="Malo"><i class="bi bi-book-fill"></i></label>
                             </div>
                         </div>
-                        <p class="card-text text-light opacity-75 mt-2" th:text="${resena.comentario}">Comentario...</p>
-                    </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Comentario</label>
+                            <textarea name="comentario" class="text-white form-control form-control-dark" rows="3"
+                                      placeholder="¿Qué te ha parecido este libro? (Opcional)"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger fw-bold">Publicar Opinión</button>
+                    </form>
                 </div>
 
+                <div sec:authorize="!isAuthenticated()" class="alert alert-dark border-secondary text-white mb-4 p-4 text-center">
+                    <h5>¿Has leído este libro?</h5>
+                    <p class="mb-3">Únete a la comunidad de BookFlix para compartir tu opinión.</p>
+                    <a href="/login" class="btn btn-outline-danger btn-sm fw-bold">Iniciar Sesión</a>
+                </div>
+
+                <div th:if="${resenas.empty}" class="text-light fst-italic mt-4 p-3 border border-secondary rounded text-center">
+                    Aún nadie ha opinado sobre este libro. ¡Sé el primero!
+                </div>
+
+                <div th:each="resena : ${resenas}" class="review-item">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <img th:src="'https://ui-avatars.com/api/?name=' + ${resena.usuario.username} + '&background=random&size=40'" class="rounded-circle">
+                            <div>
+                                <span class="fw-bold text-white d-block" th:text="${resena.usuario.username}">Usuario</span>
+                                <small class="text-white-50" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
+                            </div>
+                        </div>
+
+                        <div class="text-danger fs-5">
+                            <span th:each="i : ${#numbers.sequence(1, resena.puntuacion)}"><i class="bi bi-book-fill"></i></span><span th:if="${resena.puntuacion < 5}" th:each="i : ${#numbers.sequence(resena.puntuacion + 1, 5)}" class="text-secondary opacity-25"><i class="bi bi-book-fill"></i></span>
+                        </div>
+                    </div>
+
+                    <p class="mb-0 text-white mt-3 border-start border-danger border-2 ps-3"
+                       th:text="${resena.comentario}">Comentario...</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
+<footer class="container-fluid bg-black text-center py-4 mt-5" style="border-top: 1px solid #333;">
+    <p class="text-white text-opacity-75 small mb-0">
+        &copy; 2026 <strong class="text-danger">BookFlix</strong>. Todos los derechos reservados.
+    </p>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

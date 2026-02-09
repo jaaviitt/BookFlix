@@ -3,113 +3,126 @@
 <head>
     <title>Mi Perfil - BookFlix</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
-    <link th:href="@{/css/admin.css}" rel="stylesheet">
-</head>
-<body class="bg-black text-white">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-black bg-opacity-90 border-bottom border-secondary">
-    <div class="container-fluid">
-        <a class="navbar-brand text-danger fw-bold fs-3" href="/">BOOKFLIX</a>
-        <div class="d-flex align-items-center gap-2 ms-auto">
-            <a href="/" class="btn btn-outline-light btn-sm">Volver al Inicio</a>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top p-0" style="background-color: #000; border-bottom: 1px solid #222;">
+    <div class="container-fluid px-4 py-2">
+        <a class="navbar-brand fw-bold" href="/" style="color: #E50914; font-size: 1.8rem;">BOOKFLIX</a>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-white small d-none d-md-block">Hola, <strong th:text="${usuario.username}">Usuario</strong></span>
+                <img th:src="'https://ui-avatars.com/api/?name=' + ${usuario.username} + '&background=E50914&color=fff&size=32&font-size=0.5'" class="rounded">
+            </div>
             <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
+                <button type="submit" class="btn btn-link text-secondary p-0" title="Cerrar Sesión">
+                    <i class="bi bi-box-arrow-right fs-4 hover-text-white"></i>
+                </button>
             </form>
         </div>
     </div>
 </nav>
 
-<div class="container" style="margin-top: 100px;">
-    <div class="row">
+<div class="container" style="margin-top: 100px; margin-bottom: 80px;">
 
-        <div class="col-md-4 mb-4">
+    <div class="row g-5">
 
-            <div class="card bg-dark text-white border-secondary shadow mb-4">
+        <div class="col-lg-5">
+
+            <div class="card card-dark shadow mb-4">
                 <div class="card-body text-center p-4">
-                    <img th:src="'https://ui-avatars.com/api/?name=' + ${usuario.username} + '&background=random&size=128'"
-                         class="rounded-circle mb-3 border border-3 border-danger" alt="Avatar">
+                    <img th:src="'https://ui-avatars.com/api/?name=' + ${usuario.username} + '&background=E50914&color=fff&size=100&font-size=0.4'"
+                         class="rounded-circle mb-3 shadow border border-2 border-dark" alt="Avatar">
 
-                    <h3 class="card-title fw-bold" th:text="${usuario.username}">Usuario</h3>
+                    <h3 class="fw-bold mb-1 text-white" th:text="${usuario.username}">Usuario</h3>
 
-                    <span class="badge bg-danger mb-3" th:if="${usuario.roles.contains('ROLE_ADMIN')}">ADMINISTRADOR</span>
-                    <p class="mb-4" th:unless="${usuario.roles.contains('ROLE_ADMIN')}">Miembro de BookFlix</p>
+                    <div class="mb-3">
+                        <span class="badge bg-danger" th:if="${usuario.roles.contains('ROLE_ADMIN')}">ADMIN</span>
+                        <span class="badge bg-secondary" th:unless="${usuario.roles.contains('ROLE_ADMIN')}">MIEMBRO</span>
+                    </div>
 
-                    <div class="text-center border-top border-secondary pt-3">
+                    <div class="d-flex justify-content-center gap-5 border-top border-secondary pt-3 mt-3">
                         <div>
-                            <h4 class="fw-bold mb-0" th:text="${totalResenas}">0</h4>
-                            <small class="text-secondary">Reseñas publicadas</small>
+                            <h4 class="fw-bold mb-0 text-white" th:text="${totalResenas}">0</h4>
+                            <small style="font-size: 0.8rem;">RESEÑAS</small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card bg-dark text-white border-secondary shadow">
-                <div class="card-header border-secondary fw-bold text-uppercase text-danger">
-                    ⚙️ Editar Mis Datos
+            <div class="card card-dark shadow">
+                <div class="card-header border-bottom border-secondary py-3">
+                    <h5 class="m-0 fw-bold text-danger"><i class="bi bi-pencil-square me-2"></i>Editar Mis Datos</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
 
-                    <div th:if="${param.exito}" class="alert alert-success py-2 small mb-3">
-                        ✅ Datos actualizados correctamente.
+                    <div th:if="${param.exito}" class="alert alert-success bg-success text-white border-0 py-2 small mb-3">
+                        Datos guardados correctamente.
                     </div>
 
                     <form th:action="@{/perfil/guardar}" method="post">
                         <div class="mb-3">
                             <label class="form-label small">Correo Electrónico</label>
-                            <input type="email" name="email" class="form-control bg-secondary text-white border-0"
+                            <input type="email" name="email" class="form-control form-control-dark"
                                    th:value="${usuario.email}" required>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label class="form-label small">Nueva Contraseña</label>
-                            <input type="password" name="newPassword" class="form-control bg-secondary text-white border-0"
-                                   placeholder="Dejar vacío para no cambiar">
+                            <input type="password" name="newPassword" class="form-control form-control-dark"
+                                   placeholder="••••••••">
+                            <small class="d-block mt-1" style="font-size: 0.7rem;">Deja esto vacío si no quieres cambiarla.</small>
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-danger">Guardar Cambios</button>
+                            <button type="submit" class="btn btn-danger fw-bold">GUARDAR CAMBIOS</button>
                         </div>
                     </form>
                 </div>
             </div>
-
         </div>
 
-        <div class="col-md-8">
-            <h3 class="border-bottom border-secondary pb-2 mb-4">Historial de Reseñas</h3>
+        <div class="col-lg-7">
+            <h4 class="text-white mb-4 border-bottom border-secondary pb-2">Historial de Reseñas</h4>
 
-            <div th:if="${resenas.empty}" class="text-center py-5">
-                <h4>Aún no has escrito ninguna reseña.</h4>
-                <p>¡Lee un libro y cuéntanos qué te parece!</p>
-                <a href="/" class="btn btn-primary mt-2">Explorar Libros</a>
+            <div th:if="${resenas.empty}" class="text-center py-5 card card-dark">
+                <div class="card-body">
+                    <i class="bi bi-chat-square-text fs-1 text-muted mb-3 d-block"></i>
+                    <h5 class="text-white">Aún no has opinado.</h5>
+                    <p class="text-muted small">Tus reseñas aparecerán aquí.</p>
+                    <a href="/" class="btn btn-outline-light btn-sm mt-2">Ir al Catálogo</a>
+                </div>
             </div>
 
-            <div th:each="resena : ${resenas}" class="card bg-dark text-white border-secondary mb-3 hover-effect">
-                <div class="card-body d-flex gap-3">
+            <div th:each="resena : ${resenas}" class="card card-dark mb-3 shadow-sm border-0">
+                <div class="card-body d-flex gap-3 align-items-start">
 
-                    <a th:href="@{/libro/{id}(id=${resena.libro.id})}">
+                    <a th:href="@{/libro/{id}(id=${resena.libro.id})}" class="flex-shrink-0">
                         <img th:src="${resena.libro.imagenUrl != null ? resena.libro.imagenUrl : 'https://via.placeholder.com/60x90'}"
-                             style="width: 70px; height: 105px; object-fit: cover; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5);">
+                             class="rounded shadow-sm" width="60" height="90" style="object-fit: cover;">
                     </a>
 
-                    <div class="w-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <h5 class="card-title mb-1">
-                                <a th:href="@{/libro/{id}(id=${resena.libro.id})}" class="text-decoration-none text-white fw-bold">
-                                    <span th:text="${resena.libro.titulo}">Título Libro</span>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h5 class="card-title mb-0">
+                                <a th:href="@{/libro/{id}(id=${resena.libro.id})}" class="text-white text-decoration-none fw-bold hover-danger">
+                                    <span th:text="${resena.libro.titulo}">Título</span>
                                 </a>
                             </h5>
-                            <small class="text-secondary" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
+                            <small class="text-muted" th:text="${#temporals.format(resena.fecha, 'dd/MM/yyyy')}">Fecha</small>
                         </div>
 
-                        <div class="text-danger mb-2 fs-5">
+                        <div class="text-danger mb-2 small">
                             <span th:each="i : ${#numbers.sequence(1, resena.puntuacion)}">★</span><span th:if="${resena.puntuacion < 5}" th:each="i : ${#numbers.sequence(resena.puntuacion + 1, 5)}" class="text-secondary opacity-25">★</span>
                         </div>
 
-                        <p class="card-text text-light small fst-italic border-start border-3 border-secondary ps-3"
+                        <p class="card-text review-text fst-italic small border-start border-danger border-2 ps-2 mb-0"
                            th:text="'&quot;' + ${resena.comentario} + '&quot;'">
-                            Comentario
+                            Comentario...
                         </p>
                     </div>
                 </div>
@@ -118,6 +131,12 @@
         </div>
     </div>
 </div>
+
+<footer class="container-fluid bg-black text-center py-4 mt-5" style="border-top: 1px solid #333;">
+    <p class="text-white text-opacity-75 small mb-0">
+        &copy; 2026 <strong class="text-danger">BookFlix</strong>. Todos los derechos reservados.
+    </p>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
