@@ -22,3 +22,42 @@ src/main/resources/static/uploads/
 src/main/resources/static/img/
 *.log
 data/bookdb.mv.db
+
+# Agregar configuraciones para GitHub
+# Ignorar archivos de configuración específicos del entorno
+*.env
+*.local
+
+# Ignorar archivos de sistema
+Thumbs.db
+.DS_Store
+
+# Ignorar archivos de compilación
+*.class
+*.log
+
+# Ignorar configuraciones de IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Ignorar directorios de construcción
+target/
+!**/src/main/**/target/
+
+# Ignorar bases de datos locales y archivos subidos
+data/
+data/bookdb.mv.db
+src/main/resources/static/uploads/
+src/main/resources/static/img/
+
+# Ignorar otros archivos innecesarios
+HELP.md
+.classpath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
